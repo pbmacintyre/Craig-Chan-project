@@ -20,7 +20,6 @@
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/guzzle" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/promises" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/psr7" />
-      <path value="$PROJECT_DIR$/vendor/bigcommerce/api" />
       <path value="$PROJECT_DIR$/vendor/php-shopify/lib" />
       <path value="$PROJECT_DIR$/vendor/php-shopify/tests" />
       <path value="$PROJECT_DIR$/vendor/ringcentral/ringcentral-php" />
@@ -32,7 +31,6 @@
       <path value="$PROJECT_DIR$/vendor/psr/http-message" />
       <path value="$PROJECT_DIR$/vendor/psr/log" />
       <path value="$PROJECT_DIR$/vendor/clue/stream-filter" />
-      <path value="$PROJECT_DIR$/vendor/brick/math" />
       <path value="$PROJECT_DIR$/vendor/react/cache" />
       <path value="$PROJECT_DIR$/vendor/react/dns" />
       <path value="$PROJECT_DIR$/vendor/react/event-loop" />
@@ -40,14 +38,11 @@
       <path value="$PROJECT_DIR$/vendor/react/socket" />
       <path value="$PROJECT_DIR$/vendor/react/stream" />
       <path value="$PROJECT_DIR$/vendor/pubnub/pubnub" />
-      <path value="$PROJECT_DIR$/vendor/ramsey/collection" />
-      <path value="$PROJECT_DIR$/vendor/ramsey/uuid" />
       <path value="$PROJECT_DIR$/vendor/rmccue/requests" />
       <path value="$PROJECT_DIR$/vendor/vlucas/phpdotenv" />
       <path value="$PROJECT_DIR$/vendor/mailgun/mailgun-php" />
       <path value="$PROJECT_DIR$/vendor/ratchet/pawl" />
       <path value="$PROJECT_DIR$/vendor/ratchet/rfc6455" />
-      <path value="$PROJECT_DIR$/vendor/shopify/shopify-api" />
       <path value="$PROJECT_DIR$/vendor/symfony/deprecation-contracts" />
       <path value="$PROJECT_DIR$/vendor/symfony/event-dispatcher" />
       <path value="$PROJECT_DIR$/vendor/symfony/event-dispatcher-contracts" />
@@ -55,15 +50,60 @@
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-ctype" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-mbstring" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php80" />
-      <path value="$PROJECT_DIR$/vendor/doctrine/inflector" />
-      <path value="$PROJECT_DIR$/vendor/firebase/php-jwt" />
       <path value="$PROJECT_DIR$/vendor/php-http/client-common" />
       <path value="$PROJECT_DIR$/vendor/php-http/discovery" />
       <path value="$PROJECT_DIR$/vendor/php-http/guzzle7-adapter" />
       <path value="$PROJECT_DIR$/vendor/php-http/httplug" />
       <path value="$PROJECT_DIR$/vendor/php-http/message" />
       <path value="$PROJECT_DIR$/vendor/php-http/multipart-stream-builder" />
+      <path value="$PROJECT_DIR$/includes/vendor/composer" />
+      <path value="$PROJECT_DIR$/includes/vendor/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/includes/vendor/webmozart/assert" />
+      <path value="$PROJECT_DIR$/includes/vendor/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/includes/vendor/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/includes/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/includes/vendor/php-shopify/lib" />
+      <path value="$PROJECT_DIR$/includes/vendor/php-shopify/tests" />
+      <path value="$PROJECT_DIR$/includes/vendor/ringcentral/ringcentral-php" />
+      <path value="$PROJECT_DIR$/includes/vendor/graham-campbell/result-type" />
+      <path value="$PROJECT_DIR$/includes/vendor/psr/event-dispatcher" />
+      <path value="$PROJECT_DIR$/includes/vendor/psr/http-client" />
+      <path value="$PROJECT_DIR$/includes/vendor/psr/http-factory" />
+      <path value="$PROJECT_DIR$/includes/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/includes/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/includes/vendor/clue/stream-filter" />
+      <path value="$PROJECT_DIR$/includes/vendor/react/cache" />
+      <path value="$PROJECT_DIR$/includes/vendor/react/dns" />
+      <path value="$PROJECT_DIR$/includes/vendor/react/event-loop" />
+      <path value="$PROJECT_DIR$/includes/vendor/react/promise" />
+      <path value="$PROJECT_DIR$/includes/vendor/react/socket" />
+      <path value="$PROJECT_DIR$/includes/vendor/react/stream" />
+      <path value="$PROJECT_DIR$/includes/vendor/pubnub/pubnub" />
+      <path value="$PROJECT_DIR$/includes/vendor/rmccue/requests" />
+      <path value="$PROJECT_DIR$/includes/vendor/vlucas/phpdotenv" />
+      <path value="$PROJECT_DIR$/includes/vendor/mailgun/mailgun-php" />
+      <path value="$PROJECT_DIR$/includes/vendor/ratchet/pawl" />
+      <path value="$PROJECT_DIR$/includes/vendor/ratchet/rfc6455" />
+      <path value="$PROJECT_DIR$/includes/vendor/symfony/deprecation-contracts" />
+      <path value="$PROJECT_DIR$/includes/vendor/symfony/event-dispatcher" />
+      <path value="$PROJECT_DIR$/includes/vendor/symfony/event-dispatcher-contracts" />
+      <path value="$PROJECT_DIR$/includes/vendor/symfony/options-resolver" />
+      <path value="$PROJECT_DIR$/includes/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/includes/vendor/symfony/polyfill-mbstring" />
+      <path value="$PROJECT_DIR$/includes/vendor/symfony/polyfill-php80" />
+      <path value="$PROJECT_DIR$/includes/vendor/php-http/client-common" />
+      <path value="$PROJECT_DIR$/includes/vendor/php-http/discovery" />
+      <path value="$PROJECT_DIR$/includes/vendor/php-http/guzzle7-adapter" />
+      <path value="$PROJECT_DIR$/includes/vendor/php-http/httplug" />
+      <path value="$PROJECT_DIR$/includes/vendor/php-http/message" />
+      <path value="$PROJECT_DIR$/includes/vendor/php-http/multipart-stream-builder" />
+      <path value="$PROJECT_DIR$/includes/vendor/php-http/promise" />
+      <path value="$PROJECT_DIR$/includes/vendor/evenement/evenement" />
+      <path value="$PROJECT_DIR$/includes/vendor/phpoption/phpoption" />
     </include_path>
+  </component>
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.1">
+    <option name="suggestChangeDefaultLanguageLevel" value="false" />
   </component>
   <component name="PhpStanOptionsConfiguration">
     <option name="transferred" value="true" />

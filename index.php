@@ -7,10 +7,10 @@ session_start();
 $_SESSION['login_good'] = 0;
 
 require_once('includes/ringcentral-functions.inc');
-require_once('includes/ringcentral-shopify-functions.inc');
-require_once('includes/ringcentral-bigcomm-functions.inc');
 require_once('includes/ringcentral-db-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
+
+show_errors();
 
 page_header(1);
 
@@ -37,16 +37,6 @@ function show_form ($message, $label = "", $print_again = false) {    ?>
                 <td colspan="2" class="CustomTableFullCol">
                     <img src="images/rc-logo.png"/>
                     <h2><?php app_name(); ?></h2>
-                    <table style="margin-left: auto; margin-right: auto; margin-bottom: 0px;">
-                        <tr>
-                            <td style="padding: 0px !important;"><h3 style="margin-bottom: 0px;">Supports:</h3></td>
-                            <td style="padding: 0px !important;"><h3 style="margin-bottom: 0px;">&nbsp;&nbsp;Shopify</h3></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td style="padding: 0px !important;"><h3 style="margin-bottom: 0px;">&nbsp;&nbsp;Big Commerce</h3></td>
-                        </tr>
-                    </table>
                     <?php
                     if ($print_again == true) {
 //                        echo "<p class='msg_bad'>" . $message . "</strong></font>";
@@ -86,16 +76,13 @@ function show_form ($message, $label = "", $print_again = false) {    ?>
                 <td colspan="2" class="CustomTableFullCol"><hr></td>
             </tr>
             <tr class="CustomTable">
-                <td class="CustomTableFullCol">
-                    <a class="links" href="register_platforms.php">Register for a Platform</a>
-                </td>
-                <td class="CustomTableFullCol">
+                <td colspan="2" class="CustomTableFullCol">
                     <a class="links" href="lost_password.php">Lost password</a>
                 </td>
             </tr>
             <tr class="CustomTable">
                 <td colspan="2" class="CustomTableFullCol">
-                    <?php echo_plain_text("Version 2.1", "grey", "small"); ?>
+                    <?php echo_plain_text("Version 0.1", "grey", "small"); ?>
                 </td>
             </tr>
         </table>
@@ -161,15 +148,15 @@ if (isset($_POST['login'])) {
     check_form();
 } else {
     $_SESSION['login_action'] = false;
-    if ($_GET['pwd'] == 1) {
-        $message = "Your password has been successfully updated";
-    } elseif ($_GET['pwd_reset'] == 1) { {
-        $message = "If we have your email on file we have sent you an email with a link to reset your password.";
-    }
-    } else {
+//    if ($_GET['pwd'] == 1) {
+//        $message = "Your password has been successfully updated";
+//    } elseif ($_GET['pwd_reset'] == 1) { {
+//        $message = "If we have your email on file we have sent you an email with a link to reset your password.";
+//    }
+//    } else {
         $message = "Please provide credentials to login to your account. <br/>";
-        $message .= "If you are new here, please \"Register for a Platform\".";
-    }
+       // $message .= "If you are new here, please \"Register for a Platform\".";
+//    }
     show_form($message);
 }
 

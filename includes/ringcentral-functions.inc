@@ -6,12 +6,12 @@
 /* ================= */
 
 function prod_test() {
-    return 1 ;  // 1 for production & 0 for test environment
+    return 0 ;  // 1 for production & 0 for test environment
 }
 
 function app_name () {
-    echo "Ecommerce App";
-    return "Ecommerce App";
+    echo "Craig Chan Project";
+    return "Craig Chan Project";
 }
 
 /* ================== */
@@ -190,7 +190,7 @@ function ringcentral_create_webhook_subscription ($jwt, $shop_type) {
 
     $subscription_url = "https://" . $_SERVER['HTTP_HOST'] ;
     if (prod_test() == 0 ) {
-        $subscription_url .= "/shopifyapp/process_webhook.php" ;
+        $subscription_url .= "/craig_chan_project/process_webhook.php" ;
     } elseif (prod_test() == 1 ) {
         $subscription_url .= "/process_webhook.php" ;
     }
@@ -270,32 +270,3 @@ function send_mailgun_email ($email, $subject, $body) {
     return $result;
 }
 
-function get_shop_table($field, $value) {
-    // fields to use are user_email, and mobile
-    // returns the table name where data was found, the record id, and the jwt_key in an array
-    $shop_info = false;
-    $where_info = array("$field", $value);
-
-    $columns_data = array("id", "jwt_code", "store_hash");
-    $db_result = db_record_select("bigcomm_shops", $columns_data, $where_info);
-    if ($db_result) {
-        $shop_info = array();
-        $shop_info["name"] = "bigcomm_shops";
-        $shop_info["shop_type"] = "Big Commerece Shop";
-        $shop_info["id"] = $db_result[0]['id'];
-        $shop_info["jwt_key"] = $db_result[0]['jwt_code'];
-        $shop_info["store_hash"] = $db_result[0]['store_hash'];
-    }
-
-    $columns_data = array("id", "jwt_code");
-    $db_result = db_record_select("shopify_shops", $columns_data, $where_info);
-    if ($db_result) {
-        $shop_info = array();
-        $shop_info["name"] = "shopify_shops";
-        $shop_info["shop_type"] = "Shopify Shop";
-        $shop_info["id"] = $db_result[0]['id'];
-        $shop_info["jwt_key"] = $db_result[0]['jwt_code'];
-    }
-
-    return $shop_info ;
-}
