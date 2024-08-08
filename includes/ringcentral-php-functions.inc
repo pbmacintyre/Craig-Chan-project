@@ -11,7 +11,7 @@ function page_header($recap = 0, $errors = 0) {
     if ($errors == 1) { show_errors(); }
     echo "<html class='SiteWide'><head >";
     if ($recap) { ringcentral_build_recaptcha_v3_top(); }
-    echo "<title >Ecommerce App</title></head>";
+    echo "<title >CCP</title></head>";
     echo "<link rel='stylesheet' href='css/ringcentral-custom.css'>";
 }
 function page_footer() {

@@ -9,7 +9,6 @@
 function db_credentials () {
     return db_mysql_credentials();
 //    return db_postgres_credentials();
-//    return db_postgres_BC_credentials();
 }
 function db_mysql_credentials () {
     $servername = "localhost";
@@ -19,14 +18,7 @@ function db_mysql_credentials () {
     // Create connection
     return new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
 }
-function db_postgres_BC_credentials () {
-    $servername = "cat670aihdrkt1.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com";
-    $username = "u5qpbm7opslsht";
-    $password = "p3968925d4a022a0324b1690ab58b7a99e63ec6dfb3bdfa756991b33838612f60";
-    $dbname = "dl8r7c86isrls";
-    // Create connection
-    return new PDO("pgsql:host=$servername;dbname=$dbname", $username, $password);
-}
+
 function db_postgres_credentials () {
     $servername = "c7gljno857ucsl.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com";
     $username = "u7tht5cnhsoae5";
