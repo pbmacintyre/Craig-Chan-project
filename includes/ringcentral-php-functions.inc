@@ -116,14 +116,5 @@ function dump_log ($filename) {
     }
 
 }
-function empty_log($filename) {
-
-    if (file_exists($filename)) {
-        file_put_contents($filename, '');
-        echo "$filename has been emptied.";
-    } else {
-        echo "$filename does not exist.";
-    }
-}
 
 
