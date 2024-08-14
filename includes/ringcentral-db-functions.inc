@@ -7,27 +7,13 @@
 /* DB interaction functions */
 /* ======================== */
 function db_credentials () {
-    return db_mysql_credentials();
-//    return db_postgres_credentials();
-}
-function db_mysql_credentials () {
     $servername = "localhost";
-    $username = "paladip9_adm1n";
-    $password = "1q2w3e4r5t!!Q";
-    $dbname = "paladip9_rc_ecomm";
-    // Create connection
-    return new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-}
-
-function db_postgres_credentials () {
-    $servername = "c7gljno857ucsl.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com";
-    $username = "u7tht5cnhsoae5";
-    $password = "pf5ebae87520490c65fc11134186408882a1051244436594fad1a135b4473e5ff";
-    $dbname = "d62i0813389oh7";
+    $username = "paladip9_pgadmin";
+    $password = "nf@[$2Wz59e_";
+    $dbname = "paladip9_craig";
     // Create connection
     return new PDO("pgsql:host=$servername;dbname=$dbname", $username, $password);
 }
-
 function db_record_insert ($table, $columns_data) {
     /*
     Usage:

@@ -5,6 +5,10 @@
 /* Generic functions */
 /* ================= */
 
+use RingCentral\SDK\Http\HttpException;
+use RingCentral\SDK\Http\ApiResponse;
+use RingCentral\SDK\SDK;
+
 function prod_test() {
     return 0 ;  // 1 for production & 0 for test environment
 }
@@ -19,35 +23,17 @@ function app_name () {
 /* ================== */
 function ringcentral_sdk () {
     // Include Libraries
-    require('includes/vendor/autoload.php');
+    require_once('includes/vendor/autoload.php');
 
-    // use DB data
-    $table = "ringcentral_control";
-    $columns_data = array("jwt_key");
-    $where_info = array("ringcentral_control_id", 1);
-    $db_result = db_record_select($table, $columns_data, $where_info);
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
 
-    $jwt_key = $db_result[0]["jwt_key"];
+    $sdk = new RingCentral\SDK\SDK(
+        $_ENV['RC_APP_CLIENT_ID'],
+        $_ENV['RC_APP_CLIENT_SECRET'],
+        $_ENV['RC_SERVER_URL']);
 
-    // Use Production platform
-    $server = 'https://platform.ringcentral.com';
-    // "SMS for Ecommerce (Shopift, Big Commerce, etc.)" app
-    $client_id = "ey5YmR27By0bcwttw2hAzu";
-    $client_secret = "dHO92FNjbu7bDLeDks18c4VmPNOdlHi9lahyxki86Lqm";
-
-    $sdk = new RingCentral\SDK\SDK($client_id, $client_secret, $server);
-
-    // Login via API
-    if (!$sdk->platform()->loggedIn()) {
-        try {
-            $sdk->platform()->login(["jwt" => $jwt_key]);
-        }
-        catch (\RingCentral\SDK\Http\ApiException $e) {
-            $sdk = 0;
-            // exit("<br/><br/>Unable to authenticate to platform. Check your RingCentral credentials. <br/><br/>") ;
-        }
-    }
-    return $sdk;
+    return $sdk->platform();
 }
 
 /* ============================== */

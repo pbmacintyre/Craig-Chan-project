@@ -1,29 +1,14 @@
 <?php
 ob_start();
+session_start();
+
 $USE_PKCE = True;
 
 require_once('includes/ringcentral-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
 
 show_errors();
-
-require_once('includes/vendor/autoload.php');
-
-use RingCentral\SDK\Http\HttpException;
-use RingCentral\SDK\Http\ApiResponse;
-use RingCentral\SDK\SDK;
-
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
-session_start();
-
-//echo_spaces("env array", $_ENV);
-
-$rcsdk = new RingCentral\SDK\SDK(
-    $_ENV['RC_APP_CLIENT_ID'],
-    $_ENV['RC_APP_CLIENT_SECRET'],
-    $_ENV['RC_SERVER_URL']);
-$platform = $rcsdk->platform();
+$platform = ringcentral_sdk ();
 
 // process an oauth redirect
 if (isset($_GET['code'])) {
