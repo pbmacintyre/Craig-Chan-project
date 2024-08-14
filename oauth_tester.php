@@ -58,7 +58,8 @@ if (isset($_REQUEST['logout'])) {
             $endDateTime = $dateTime->format('Y-m-d\TH:i:s.v\Z');
 
             $params = array(
-                'eventTimeFrom' => $startDateTime,
+//                'eventTimeFrom' => $startDateTime,
+                'eventTimeFrom' => '2024-08-01T00:00:00.000Z',
                 'eventTimeTo' => $endDateTime,
                 'includeAdmins' => True,
                 'includeHidden' => True,
