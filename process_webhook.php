@@ -9,8 +9,6 @@
 // to process STOP / HELP / START requests
 
 require_once('includes/ringcentral-functions.inc');
-require_once('includes/ringcentral-shopify-functions.inc');
-require_once('includes/ringcentral-bigcomm-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
 require_once('includes/ringcentral-db-functions.inc');
 

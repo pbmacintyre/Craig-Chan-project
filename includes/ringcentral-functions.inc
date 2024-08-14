@@ -269,4 +269,85 @@ function send_mailgun_email ($email, $subject, $body) {
     }
     return $result;
 }
+// =====================================================
+// ======= GET / POST Functions are below ==============
+// =====================================================
+function callAccountRequest ($endpoint, $params) {
+    global $platform;
+    try {
+        $resp = $platform->get($endpoint, $params);
+        echo_spaces("Object detail", $resp->json()->id);
+//        echo_spaces("Object detail", $resp->json()->serviceInfo->brand);
+        echo_spaces("Object", $resp->json());
+//        echo $resp->text();
+    }
+    catch (\RingCentral\SDK\Http\ApiException $e) {
+        print 'Expected HTTP Error: ' . $e->getMessage() . PHP_EOL;
+    }
+}
 
+function callPostRequest ($endpoint, $params=null) {
+    global $platform;
+    echo_spaces("Params", $params);
+    $i = 1 ;
+    try {
+        $resp = $platform->post($endpoint, $params);
+        foreach ($resp->json()->records as $value) {
+            //if ($value->eventType == "UPDATE") {
+                echo_spaces("Counter", $i++);
+                echo_spaces("Event Time", date("F j, Y, g:i a", strtotime($value->eventTime)));
+                echo_spaces("Event Type", $value->eventType);
+                echo_spaces("Action", $value->actionId);
+                echo_spaces("Initiator Name", $value->initiator->name);
+                echo_spaces("Initiator Role", $value->initiator->role);
+
+                echo_spaces("Element affected", $value->details->parameters[0]->value);
+                echo_spaces("Old value", $value->details->parameters[1]->value);
+                echo_spaces("New value", $value->details->parameters[2]->value, 2);
+//            }
+        }
+        echo_spaces("Object", $resp->json());
+    }
+    catch (\RingCentral\SDK\Http\ApiException $e) {
+        print 'Expected HTTP Error: ' . $e->getMessage() . PHP_EOL;
+    }
+}
+
+// helper function for calling API and printing results
+function callGetRequest ($endpoint, $params) {
+    global $platform;
+    try {
+        $resp = $platform->get($endpoint, $params);
+        header("Content-type: text/plain");
+        echo $resp->text();
+    }
+    catch (\RingCentral\SDK\Http\ApiException $e) {
+        print 'Expected HTTP Error: ' . $e->getMessage() . PHP_EOL;
+    }
+}
+
+function callUserRollRequest ($endpoint, $params) {
+    global $platform;
+    try {
+        $resp = $platform->get($endpoint, $params);
+
+        $i = 1;
+        foreach ($resp->json()->records as $value) {
+//            echo_spaces("admins", $value->displayName);
+//            if ($value->description) { echo_spaces("desc", $value->description); }
+            if (stripos($value->displayName, "admin") == true) {
+                // build output
+                $outstring = $value->displayName;
+                if ($value->description) {
+                    $outstring .= " - " . $value->description;
+                }
+                echo_spaces($i++ . " Admin User Role", $outstring);
+            }
+        }
+//        echo_spaces("result", $resp->json()->records);
+
+    }
+    catch (\RingCentral\SDK\Http\ApiException $e) {
+        print 'Expected HTTP Error: ' . $e->getMessage() . PHP_EOL;
+    }
+}

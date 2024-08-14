@@ -17,6 +17,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="RCCP test site on Paladin">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="Shopify App Location">
         <serverdata>
           <mappings>

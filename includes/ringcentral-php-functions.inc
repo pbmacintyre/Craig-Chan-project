@@ -21,8 +21,8 @@ function page_footer() {
 /* Turn on Error codes */
 /* ================== */
 function show_errors() {
-     error_reporting();
-//     error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+//     error_reporting();
+     error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
     ini_set('display_errors', 1);
 }
 function echo_spaces($text, $value="", $lines=0) {
