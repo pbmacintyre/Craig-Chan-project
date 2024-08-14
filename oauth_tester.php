@@ -60,7 +60,8 @@ if (isset($_REQUEST['logout'])) {
             $params = array(
 //                'eventTimeFrom' => $startDateTime,
                 'eventTimeFrom' => '2024-08-01T00:00:00.000Z',
-                'eventTimeTo' => $endDateTime,
+//                'eventTimeTo' => $endDateTime,
+                'eventTimeTo' => '2024-08-15T00:00:00.000Z',
                 'includeAdmins' => True,
                 'includeHidden' => True,
                 );

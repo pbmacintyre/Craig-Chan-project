@@ -288,7 +288,7 @@ function callAccountRequest ($endpoint, $params) {
 
 function callPostRequest ($endpoint, $params=null) {
     global $platform;
-    echo_spaces("Params", $params);
+//    echo_spaces("Params", $params);
     $i = 1 ;
     try {
         $resp = $platform->post($endpoint, $params);
@@ -306,7 +306,7 @@ function callPostRequest ($endpoint, $params=null) {
                 echo_spaces("New value", $value->details->parameters[2]->value, 2);
 //            }
         }
-        echo_spaces("Object", $resp->json());
+//        echo_spaces("Object", $resp->json());
     }
     catch (\RingCentral\SDK\Http\ApiException $e) {
         print 'Expected HTTP Error: ' . $e->getMessage() . PHP_EOL;

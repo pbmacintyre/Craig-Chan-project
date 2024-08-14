@@ -5,8 +5,7 @@
  *
  */
 
-// runs when an SMS message comes in from a client for a specific shop
-// to process STOP / HELP / START requests
+// runs when a RingCentral event is triggered... send SMS on certain events.
 
 require_once('includes/ringcentral-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
@@ -19,7 +18,7 @@ if (strlen($hvt) > 0) {
 
 $incoming = file_get_contents("php://input");
 
-//file_put_contents("received_SMS_payload.log", $incoming);
+file_put_contents("received_EVENT_payload.log", $incoming);
 
 if (empty($incoming)) {
     http_response_code(200);
