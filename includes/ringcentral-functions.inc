@@ -14,14 +14,42 @@ function prod_test() {
 }
 
 function app_name () {
-    echo "Craig Chan Project";
-    return "Craig Chan Project";
+    echo "Audit Trail Notifications App";
+    return "Audit Trail Notifications App";
 }
-
 /* ================== */
 /* Get RingCental SDK */
 /* ================== */
 function ringcentral_sdk () {
+    // Include Libraries
+    require('includes/vendor/autoload.php');
+
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+
+    $jwt_key = $_ENV['RC_USER_JWT'] ;
+
+    $sdk = new RingCentral\SDK\SDK(
+        $_ENV['RC_APP_CLIENT_ID'],
+        $_ENV['RC_APP_CLIENT_SECRET'],
+        $_ENV['RC_SERVER_URL']);
+
+    // Login via API
+    if (!$sdk->platform()->loggedIn()) {
+        try {
+            $sdk->platform()->login(["jwt" => $jwt_key]);
+        }
+        catch (\RingCentral\SDK\Http\ApiException $e) {
+            $sdk = $e->getMessage();
+            // exit("<br/><br/>Unable to authenticate to platform. Check your RingCentral credentials. <br/><br/>") ;
+        }
+    }
+    return $sdk;
+}
+/* ======================== */
+/* Get RingCental oAuth SDK */
+/* ======================== */
+function ringcentral_oAuth_sdk () {
     // Include Libraries
     require_once('includes/vendor/autoload.php');
 
@@ -171,8 +199,8 @@ function ringcentral_build_help ($field) {
     return "<img src='$image_source' title='" . $help_text . "' />";
 }
 
-function ringcentral_create_webhook_subscription ($jwt, $shop_type) {
-    // create watching subscription for opt Out messages
+function ringcentral_create_webhook_subscription ($sdk) {
+    // create watching subscription for audit events
 
     $subscription_url = "https://" . $_SERVER['HTTP_HOST'] ;
     if (prod_test() == 0 ) {
@@ -180,16 +208,12 @@ function ringcentral_create_webhook_subscription ($jwt, $shop_type) {
     } elseif (prod_test() == 1 ) {
         $subscription_url .= "/process_webhook.php" ;
     }
-    if ($shop_type == "shopify_shops") {
-        $sdk = ringcentral_shopify_sdk($jwt);
-    } elseif ($shop_type == "bigcomm_shops") {
-        $sdk = ringcentral_bigcomm_sdk($jwt);
-    }
+
     try {
         $api_call = $sdk->platform()->post('/subscription',
             array(
                 "eventFilters" => array(
-                    "/restapi/v1.0/account/~/extension/~/message-store/instant?type=SMS",
+                    "/restapi/v1.0/account/~/directory/entries",
                 ),
                 "expiresIn" => "315360000",
                 "deliveryMode" => array(
@@ -272,18 +296,20 @@ function callAccountRequest ($endpoint, $params) {
     }
 }
 
-function callPostRequest ($endpoint, $params=null) {
-    global $platform;
-//    echo_spaces("Params", $params);
+function callPostRequest ($sdk, $endpoint, $params=null) {
+//    echo_spaces("SDK object", $sdk);
+    echo_spaces("Session", $_SESSION);
     $i = 1 ;
     try {
-        $resp = $platform->post($endpoint, $params);
+        $resp = $sdk->platform()->post($endpoint, $params);
         foreach ($resp->json()->records as $value) {
             //if ($value->eventType == "UPDATE") {
                 echo_spaces("Counter", $i++);
                 echo_spaces("Event Time", date("F j, Y, g:i a", strtotime($value->eventTime)));
                 echo_spaces("Event Type", $value->eventType);
                 echo_spaces("Action", $value->actionId);
+                echo_spaces("Account Id", $value->accountId);
+                echo_spaces("Initiator Id", $value->initiator->extensionId);
                 echo_spaces("Initiator Name", $value->initiator->name);
                 echo_spaces("Initiator Role", $value->initiator->role);
 
@@ -336,4 +362,11 @@ function callUserRollRequest ($endpoint, $params) {
     catch (\RingCentral\SDK\Http\ApiException $e) {
         print 'Expected HTTP Error: ' . $e->getMessage() . PHP_EOL;
     }
+}
+
+function base64url_encode ($plainText) {
+    $base64 = base64_encode($plainText);
+    $base64 = trim($base64, "=");
+    $base64url = strtr($base64, '+/', '-_');
+    return ($base64url);
 }

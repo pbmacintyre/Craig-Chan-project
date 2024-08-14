@@ -103,3 +103,27 @@ function generate_form_token () {
     $_SESSION['form_token'] = $token ;
     return $token ;
 }
+function dump_log ($filename) {
+// Check if the file exists
+    if (file_exists($filename)) {
+        // Read the contents of the file
+        $logContent = file_get_contents($filename);
+
+        // Display the contents in the browser
+        echo '<pre>' . htmlspecialchars($logContent) . '</pre>';
+    } else {
+        echo 'Error: that file does not exist.';
+    }
+
+}
+function empty_log($filename) {
+
+    if (file_exists($filename)) {
+        file_put_contents($filename, '');
+        echo "$filename has been emptied.";
+    } else {
+        echo "$filename does not exist.";
+    }
+}
+
+

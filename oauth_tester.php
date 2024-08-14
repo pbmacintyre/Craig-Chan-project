@@ -8,7 +8,7 @@ require_once('includes/ringcentral-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
 
 show_errors();
-$platform = ringcentral_sdk ();
+$platform = ringcentral_sdk();
 
 // process an oauth redirect
 if (isset($_GET['code'])) {
@@ -103,12 +103,6 @@ if ($platform->loggedIn()) {
     </html>
     <?php
 } else {
-    function base64url_encode ($plainText) {
-        $base64 = base64_encode($plainText);
-        $base64 = trim($base64, "=");
-        $base64url = strtr($base64, '+/', '-_');
-        return ($base64url);
-    }
 
     $options = array(
         'redirectUri' => $_ENV['RC_REDIRECT_URL'],
