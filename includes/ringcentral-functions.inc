@@ -394,9 +394,9 @@ function list_tm_teams ($rcsdk) {
     return $response;
 }
 
-/* ============================================== */
+/* =============================================== */
 /* Post text to Team Messaging Group Chats (Teams) */
-/* ============================================== */
+/* =============================================== */
 function post_tm_chat ($rcsdk, $chatId, $team_chat) {
 
     $platform = $rcsdk->platform();

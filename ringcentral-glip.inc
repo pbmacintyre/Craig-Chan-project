@@ -5,7 +5,7 @@
  */
 
 /* ========== */
-/* show_form */
+/*  show_form */
 /* ========== */
 Function show_form($message, $label = "", $color = "#008EC2") {	
 	
