@@ -370,3 +370,54 @@ function base64url_encode ($plainText) {
     $base64url = strtr($base64, '+/', '-_');
     return ($base64url);
 }
+/* ============================================= */
+/* Get list of Team Messaging Group Chats (Teams) */
+/* ============================================= */
+function list_tm_teams ($rcsdk) {
+
+    $platform = $rcsdk->platform();
+
+    $queryParams = array(
+        'type' => array('Team'),
+        //'type' => array( 'Everyone', 'Group', 'Personal', 'Direct', 'Team' ),
+        //'recordCount' => 2,
+    );
+
+    try {
+        $response = $platform->get("/restapi/v1.0/glip/chats", $queryParams);
+    }
+    catch (\RingCentral\SDK\Http\ApiException $e) {
+        $response = false;
+        // $response = $e ;
+    }
+
+    return $response;
+}
+
+/* ============================================== */
+/* Post text to Team Messaging Group Chats (Teams) */
+/* ============================================== */
+function post_tm_chat ($rcsdk, $chatId, $team_chat) {
+
+    $platform = $rcsdk->platform();
+
+    $body = array(
+        'text' => $team_chat,
+        // use options below if you are ever going to send attachments to the chat as well.
+        // 'attachments' => array(
+        //	array(
+        //		'id' => '<ENTER VALUE>',
+        //		'type' => '<ENTER VALUE>'
+        //	)
+    );
+
+    try {
+        $platform->post("/restapi/v1.0/glip/chats/{$chatId}/posts", $body);
+        $result = true;
+    }
+    catch (\RingCentral\SDK\Http\ApiException $e) {
+        // echo "<br/><br/>Failed to add text to selected Team chat -><br/>" . $e ;
+        $result = false;
+    }
+    return $result;
+}
