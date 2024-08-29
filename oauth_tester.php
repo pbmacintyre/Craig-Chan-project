@@ -8,7 +8,7 @@ require_once('includes/ringcentral-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
 
 show_errors();
-$platform = ringcentral_sdk();
+$platform = ringcentral_oAuth_sdk();
 
 // process an oauth redirect
 if (isset($_GET['code'])) {
@@ -132,4 +132,3 @@ if ($platform->loggedIn()) {
 }
 
 ob_end_flush();
-?>

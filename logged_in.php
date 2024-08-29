@@ -38,7 +38,7 @@ function show_form ($message, $label = "", $print_again = false) {    ?>
                     <p style='display: inline; <?php if ($label == "user_email") echo "color:red"; ?>'>Team Chat to Post Audit Info:</p>
                 </td>
                 <td class="right_col">
-                    <?php $response = list_tm_teams(ringcentral_sdk()) ;  ?>
+                    <?php $response = list_tm_teams() ;  ?>
                     <select name="chat_id">
                         <option selected value="-1">Choose Team to Post Chat into</option>
                         <?php

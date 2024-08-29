@@ -11,7 +11,7 @@ Function show_form($message, $label = "", $color = "#008EC2") {
 	
 	global $print_again, $wpdb;   
 
- 	$response = list_tm_teams(ringcentral_sdk()) ;
+ 	$response = list_tm_teams() ;
  	
 	if ($response == false) {
 		$message = "Failed to retrieve Team names";

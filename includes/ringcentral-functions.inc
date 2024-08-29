@@ -34,17 +34,20 @@ function ringcentral_sdk () {
         $_ENV['RC_APP_CLIENT_SECRET'],
         $_ENV['RC_SERVER_URL']);
 
+    $platform = $sdk->platform();
+
     // Login via API
     if (!$sdk->platform()->loggedIn()) {
         try {
-            $sdk->platform()->login(["jwt" => $jwt_key]);
+            $platform->login(["jwt" => $jwt_key]);
         }
         catch (\RingCentral\SDK\Http\ApiException $e) {
-            $sdk = $e->getMessage();
+            $sdk = 0;
             // exit("<br/><br/>Unable to authenticate to platform. Check your RingCentral credentials. <br/><br/>") ;
         }
     }
-    return $sdk;
+    $controller = array('SDK' => $sdk, 'platform' => $platform);
+    return $controller;
 }
 /* ======================== */
 /* Get RingCental oAuth SDK */
@@ -296,12 +299,12 @@ function callAccountRequest ($endpoint, $params) {
     }
 }
 
-function callPostRequest ($sdk, $endpoint, $params=null) {
+function callPostRequest ($platform, $endpoint, $params=null) {
 //    echo_spaces("SDK object", $sdk);
     echo_spaces("Session", $_SESSION);
     $i = 1 ;
     try {
-        $resp = $sdk->platform()->post($endpoint, $params);
+        $resp = $platform->post($endpoint, $params);
 //        foreach ($resp->json()->records as $value) {
 //            //if ($value->eventType == "UPDATE") {
 //                echo_spaces("Counter", $i++);
@@ -373,9 +376,11 @@ function base64url_encode ($plainText) {
 /* ============================================= */
 /* Get list of Team Messaging Group Chats (Teams) */
 /* ============================================= */
-function list_tm_teams ($rcsdk) {
+function list_tm_teams () {
 
-    $sdk = ringcentral_sdk();
+    $controller = ringcentral_sdk();
+    $platform = $controller['platform'];
+    $sdk = $controller['SDK'];
 
     $endpoint = "/team-messaging/v1/chats";
 
@@ -386,7 +391,7 @@ function list_tm_teams ($rcsdk) {
     );
 
     try {
-        $resp = $sdk->platform()->get($endpoint, $params);
+        $resp = $platform->get($endpoint, $params);
     }
     catch (\RingCentral\SDK\Http\ApiException $e) {
         //echo_spaces("Error message", $e->getMessage());

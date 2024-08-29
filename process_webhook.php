@@ -19,7 +19,7 @@ if (strlen($hvt) > 0) {
 $incoming = file_get_contents("php://input");
 
 // use following to send incoming event data to a file for visual review
-// file_put_contents("received_EVENT_payload.log", $incoming);
+file_put_contents("received_EVENT_payload.log", $incoming);
 
 if (empty($incoming)) {
     http_response_code(200);

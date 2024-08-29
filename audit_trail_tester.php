@@ -6,8 +6,9 @@ require_once('includes/ringcentral-db-functions.inc');
 
 show_errors();
 
-$sdk = ringcentral_sdk();
-//echo_spaces("SDK object", $sdk);
+$controller = ringcentral_sdk();
+$platform = $controller['platform'];
+$sdk = $controller['SDK'];
 
 $endpoint = "/restapi/v1.0/account/~/audit-trail/search";
 $dateTime = new DateTime('now', new DateTimeZone('AST'));
@@ -20,12 +21,12 @@ $params = array(
 //                'eventTimeFrom' => $startDateTime,
     'eventTimeFrom' => '2024-08-01T00:00:00.000Z',
 //                'eventTimeTo' => $endDateTime,
-    'eventTimeTo' => '2024-08-15T00:00:00.000Z',
+    'eventTimeTo' => '2024-08-22T00:00:00.000Z',
     'includeAdmins' => True,
     'includeHidden' => True,
 );
 
-callPostRequest($sdk, $endpoint, $params);
+callPostRequest($platform, $endpoint, $params);
 
 
 //$table = "ringcentral_control";

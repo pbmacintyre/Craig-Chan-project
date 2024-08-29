@@ -6,10 +6,11 @@ require_once('includes/ringcentral-db-functions.inc');
 
 show_errors();
 
-$sdk = ringcentral_sdk ();
-//echo_spaces("SDK object", $sdk);
+$controller = ringcentral_sdk();
+$platform = $controller['platform'];
+$sdk = $controller['SDK'];
 
-$response = $sdk->platform()->get("/subscription");
+$response = $platform->get("/subscription");
 
 $subscriptions = $response->json()->records;
 
