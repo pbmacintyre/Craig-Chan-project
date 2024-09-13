@@ -305,22 +305,22 @@ function callPostRequest ($platform, $endpoint, $params=null) {
     $i = 1 ;
     try {
         $resp = $platform->post($endpoint, $params);
-//        foreach ($resp->json()->records as $value) {
-//            //if ($value->eventType == "UPDATE") {
-//                echo_spaces("Counter", $i++);
-//                echo_spaces("Event Time", date("F j, Y, g:i a", strtotime($value->eventTime)));
-//                echo_spaces("Event Type", $value->eventType);
-//                echo_spaces("Action", $value->actionId);
-//                echo_spaces("Account Id", $value->accountId);
-//                echo_spaces("Initiator Id", $value->initiator->extensionId);
-//                echo_spaces("Initiator Name", $value->initiator->name);
-//                echo_spaces("Initiator Role", $value->initiator->role);
-//
-//                echo_spaces("Element affected", $value->details->parameters[0]->value);
-//                echo_spaces("Old value", $value->details->parameters[1]->value);
-//                echo_spaces("New value", $value->details->parameters[2]->value, 2);
-////            }
-//        }
+        foreach ($resp->json()->records as $value) {
+            //if ($value->eventType == "UPDATE") {
+                echo_spaces("Counter", $i++);
+                echo_spaces("Event Time", date("F j, Y, g:i a", strtotime($value->eventTime)));
+                echo_spaces("Event Type", $value->eventType);
+                echo_spaces("Action", $value->actionId);
+                echo_spaces("Account Id", $value->accountId);
+                echo_spaces("Initiator Id", $value->initiator->extensionId);
+                echo_spaces("Initiator Name", $value->initiator->name);
+                echo_spaces("Initiator Role", $value->initiator->role);
+
+                echo_spaces("Element affected", $value->details->parameters[0]->value);
+                echo_spaces("Old value", $value->details->parameters[1]->value);
+                echo_spaces("New value", $value->details->parameters[2]->value, 2);
+//            }
+        }
         echo_spaces("Object", $resp->json());
     }
     catch (\RingCentral\SDK\Http\ApiException $e) {

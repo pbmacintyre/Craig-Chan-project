@@ -12,6 +12,8 @@ $platform = ringcentral_oAuth_sdk();
 
 // process an oauth redirect
 if (isset($_GET['code'])) {
+    echo_spaces("GET Code string value", $_GET['code']);
+    echo_spaces("SESSION value", $_SESSION );
     $qs = $platform->parseAuthRedirectUrl($_SERVER['QUERY_STRING']);
     $qs["redirectUri"] = $_ENV['RC_REDIRECT_URL'];
     if ($USE_PKCE) {
@@ -46,12 +48,12 @@ if (isset($_REQUEST['logout'])) {
 //                'eventTimeFrom' => $startDateTime,
                 'eventTimeFrom' => '2024-08-01T00:00:00.000Z',
 //                'eventTimeTo' => $endDateTime,
-                'eventTimeTo' => '2024-08-15T00:00:00.000Z',
+                'eventTimeTo' => '2024-08-25T00:00:00.000Z',
                 'includeAdmins' => True,
                 'includeHidden' => True,
                 );
 
-            callPostRequest($endpoint, $params);
+            callPostRequest($platform, $endpoint, $params);
             break;
         case "user-roll":
             $endpoint = "/restapi/v1.0/dictionary/user-role";
@@ -87,7 +89,8 @@ if ($platform->loggedIn()) {
     <body>
     <?php
 
-    echo_spaces("GET Code string", $_GET['code']);
+    // echo_spaces("GET Code string", $_GET['code']);
+    echo_spaces("Auth Data", $platform->auth()->data());
 
     ?>
     <h2>Test out these API functions:</h2>
