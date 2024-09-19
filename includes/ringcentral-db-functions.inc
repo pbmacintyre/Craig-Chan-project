@@ -64,7 +64,8 @@ function db_record_select ($table, $columns_data, $where_info = "", $condition =
 
     $db_result = db_record_select($table, $columns_data, $where_info = "", $condition = "" );
     returns assoc array (or false):
-       $db_result[0]['field_name']... for multiple rows returned:
+       $db_result[0]['field_name']...
+    for multiple rows returned:
        foreach ($db_result as $row) {
             echo_spaces("Record ID", $row['ringcentral_control_id']);
        }
@@ -100,17 +101,18 @@ function db_record_select ($table, $columns_data, $where_info = "", $condition =
     }
 }
 
-function db_record_update ($table, $id, $fields_data) {
+function db_record_update ($table, $fields_data, $where_col, $where_data) {
     /*
     Usage:
     $table = "shopify_shops";
-    $id = $_SESSION['user_id'];
+    $where_col = "column name";
+    $where_data = "column value"
     $fields_data = $fields_data = array(
                 "firstname" => $firstname,
                 "lastname" => $lastname,
                 "store_name" => $store_name,
             );
-    db_record_update($table, $id, $fields_data ) ;
+    db_record_update($table, $fields_data, $where_col, $where_data) ;
     */
     $conn = db_credentials();
 
@@ -121,15 +123,13 @@ function db_record_update ($table, $id, $fields_data) {
     }
     $length = strlen($sql);
     $sql = substr($sql, 0, $length - 2) . substr($sql, -1);
-    $sql .= "WHERE id = :id ";
+    $sql .= "WHERE $where_col = $where_data ";
 
     $stmt = $conn->prepare($sql);
 
     foreach ($fields_data as $key => $value) {
         $stmt->bindParam(":$key", $fields_data["$key"]);
     }
-    $stmt->bindParam(":id", $id);
-
     $stmt->execute();
 }
 

@@ -4,13 +4,17 @@ session_start();
 
 require_once('includes/ringcentral-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
+require_once('includes/ringcentral-db-functions.inc');
+
 show_errors();
 
-$client_id      = '24pu9Cwlu1fcAtmSh5osBv';
-$client_secret  = 'Z3FNye3kt3kc6Ek6cj1FsF7Cpu4EJHRfhdXt0hz571Jg';
+$table = "ringcentral_control";
+$columns_data = array ("client_id", "client_secret", );
+$where_info = array ("ringcentral_control_id", 1);
+$db_result = db_record_select($table, $columns_data, $where_info = "", $condition = "" );
 
-//echo_spaces("Client ID", $client_id);
-//echo_spaces("Secret", $client_secret,1);
+$client_id      = $db_result[0]['client_id'];
+$client_secret  = $db_result[0]['client_secret'];
 
 if (isset($_GET['code'])) {
 
@@ -42,6 +46,15 @@ if (isset($_GET['code'])) {
     echo_spaces("data object", $data);
 
     $accessToken    = $data['access_token'];
+    $refreshToken    = $data['refresh_token'];
+
+    $table = "ringcentral_control";
+    $where_col = "ringcentral_control_id";
+    $where_data = 1;
+    $fields_data = $fields_data = array(
+        "refresh_token" => $refreshToken,
+    );
+    db_record_update($table, $fields_data, $where_col, $where_data ) ;
 
     /* ======================== */
 
