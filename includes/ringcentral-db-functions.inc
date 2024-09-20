@@ -14,6 +14,7 @@ function db_credentials () {
     // Create connection
     return new PDO("pgsql:host=$servername;dbname=$dbname", $username, $password);
 }
+
 function db_record_insert ($table, $columns_data) {
     /*
     Usage:
@@ -87,7 +88,7 @@ function db_record_select ($table, $columns_data, $where_info = "", $condition =
     if ($where_info) {
         $sql .= " WHERE $where_info[0] = '$where_info[1]'";
         if ($condition) {
-            $sql .= " $condition $where_info[2] = '$where_info[3]'" ;
+            $sql .= " $condition $where_info[2] = '$where_info[3]'";
         }
     }
 //    echo_spaces("SQL Text", $sql, 2);
@@ -96,8 +97,9 @@ function db_record_select ($table, $columns_data, $where_info = "", $condition =
     try {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (Exception $e) {
-        return false;
+    }
+    catch (Exception $e) {
+        return "FALSE: " . $e->getMessage();
     }
 }
 

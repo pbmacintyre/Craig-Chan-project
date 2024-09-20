@@ -2,9 +2,9 @@
 ob_start();
 session_start();
 
-require_once('includes/ringcentral-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
 require_once('includes/ringcentral-db-functions.inc');
+require_once('includes/ringcentral-functions.inc');
 
 show_errors();
 
@@ -52,6 +52,7 @@ if (isset($_GET['code'])) {
     $where_col = "ringcentral_control_id";
     $where_data = 1;
     $fields_data = $fields_data = array(
+        "access_token" => $accessToken,
         "refresh_token" => $refreshToken,
     );
     db_record_update($table, $fields_data, $where_col, $where_data ) ;
