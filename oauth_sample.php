@@ -8,13 +8,8 @@ require_once('includes/ringcentral-functions.inc');
 
 show_errors();
 
-$table = "ringcentral_control";
-$columns_data = array ("client_id", "client_secret", );
-$where_info = array ("ringcentral_control_id", 1);
-$db_result = db_record_select($table, $columns_data, $where_info = "", $condition = "" );
-
-$client_id      = $db_result[0]['client_id'];
-$client_secret  = $db_result[0]['client_secret'];
+$client_id      = '24pu9Cwlu1fcAtmSh5osBv';
+$client_secret  = 'Z3FNye3kt3kc6Ek6cj1FsF7Cpu4EJHRfhdXt0hz571Jg';
 
 if (isset($_GET['code'])) {
 
