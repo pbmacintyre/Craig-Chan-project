@@ -8,8 +8,8 @@ require_once('includes/ringcentral-functions.inc');
 
 show_errors();
 
-$client_id      = '24pu9Cwlu1fcAtmSh5osBv';
-$client_secret  = 'Z3FNye3kt3kc6Ek6cj1FsF7Cpu4EJHRfhdXt0hz571Jg';
+$client_id = '24pu9Cwlu1fcAtmSh5osBv';
+$client_secret = 'Z3FNye3kt3kc6Ek6cj1FsF7Cpu4EJHRfhdXt0hz571Jg';
 
 if (isset($_GET['code'])) {
 
@@ -38,21 +38,14 @@ if (isset($_GET['code'])) {
     curl_close($ch);
 
     $data = json_decode($response, true);
-    echo_spaces("data object", $data);
+//    echo_spaces("data object", $data);
 
-    $accessToken    = $data['access_token'];
-    $refreshToken    = $data['refresh_token'];
+    $accessToken = $data['access_token'];
+    $refreshToken = $data['refresh_token'];
 
-    $table = "ringcentral_control";
-    $where_col = "ringcentral_control_id";
-    $where_data = 1;
-    $fields_data = $fields_data = array(
-        "access_token" => $accessToken,
-        "refresh_token" => $refreshToken,
-    );
-    db_record_update($table, $fields_data, $where_col, $where_data ) ;
-
-    /* ======================== */
+    /* ============================== */
+    /* ====== get account number ==== */
+    /* ============================== */
 
     $account_url = "https://platform.ringcentral.com/restapi/v1.0/account/~";
 
@@ -68,40 +61,30 @@ if (isset($_GET['code'])) {
         ],
     ]);
 
-
     $account_response = curl_exec($account_ch);
+    curl_close($account_ch);
     $account_data = json_decode($account_response, true);
+    $accountId = $account_data['id'];
 
-    echo_spaces("account data response object", $account_data, 2);
+//    echo_spaces("Access Token", $accessToken);
+//    echo_spaces("Refresh Token", $refreshToken);
+//    echo_spaces("account #", $accountId);
 
-    /* ========================
-
-    $action_url = 'https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/sms';
-    $action_headers = [
-        'Authorization: Bearer ' . $accessToken,
-        "Content-Type: application/json"
-    ];
-    $action_data = [
-        'from' => array('phoneNumber' => '+16502950182'),  // my account phone #
-        'to' => array(array('phoneNumber' => '+19029405827')),
-        'text' => "This is a test SMS from the Craig Chan app original access token",
-    ];
-
-    $sms_ch = curl_init();
-    curl_setopt($sms_ch, CURLOPT_URL, $action_url);
-    curl_setopt($sms_ch, CURLOPT_POST, true);
-    curl_setopt($sms_ch, CURLOPT_POSTFIELDS, json_encode($action_data));
-    curl_setopt($sms_ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($sms_ch, CURLOPT_HTTPHEADER, $action_headers);
-
-    $sms_response = curl_exec($sms_ch);
-    // Check if there were any errors with the request
-    if (curl_errno($sms_ch)) {
-        echo 'Error:' . curl_error($sms_ch);
+    $table = "tokens";
+    // check if this account has already been authorized
+    $columns_data = array("token_id");
+    $where_info = array("account", $accountId);
+    $db_result = db_record_select($table, $columns_data, $where_info);
+    if (empty($db_result)) {
+        // not in DB, not already authorized, so save it
+        $columns_data = array(
+            "account" => $accountId,
+            "access" => $accessToken,
+            "refresh" => $refreshToken,);
+        db_record_insert($table, $columns_data);
+        header("Location: authorized.php?authorized=1");
     } else {
-        // Print the API response
-        echo_spaces("SMS response object", $sms_response, 2);
+        header("Location: authorized.php?authorized=0");
     }
-    curl_close($sms_ch);
-*/
+
 }

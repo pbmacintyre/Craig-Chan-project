@@ -1,0 +1,7 @@
+{"uuid":"6459213648325312009","event":"/restapi/v1.0/account/3058829020/directory/entries",
+"timestamp":"2024-08-21T17:19:44.716Z","subscriptionId":"02e55e37-8412-4691-9409-fe4ab7ea910f",
+"ownerId":"2412476021","body":{"contacts":[{"eventType":"Update","oldEtag":"64eb8e980c1fc815a43404161da6320319bf33e4770b47c651e86301ba588479",
+"newEtag":"e32e7412f598624257eda73279d386d9f54d648cbf5b4030a96b961b879156ff","id":"2412476021","type":"User","status":"Enabled",
+"firstName":"Peter","lastName":"MacIntyre","department":"light comedy","email":"peter_maci@hotmail.com","extensionNumber":"12001",
+"account":{"id":"3058829020"},"phoneNumbers":[{"phoneNumber":"+16502950182","type":"VoiceFax","formattedPhoneNumber":"+1 (650) 2950182",
+"usageType":"DirectNumber","primary":true}]}]}}

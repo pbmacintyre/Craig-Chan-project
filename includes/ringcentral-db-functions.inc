@@ -23,7 +23,7 @@ function db_record_insert ($table, $columns_data) {
        "user_email" => "pbmacintyre@example.com",
        "firstname" => "Peter",
        "lastname" => "Johnston",   );
-    $db_result = db_record_insert($table, $columns_data );
+    db_record_insert($table, $columns_data );
     */
 
     $values = "";
