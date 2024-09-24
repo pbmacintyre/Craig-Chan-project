@@ -7,10 +7,15 @@
 /* DB interaction functions */
 /* ======================== */
 function db_credentials () {
-    $servername = "localhost";
-    $username = "paladip9_pgadmin";
-    $password = "nf@[$2Wz59e_";
-    $dbname = "paladip9_craig";
+
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ );
+    $dotenv->load();
+
+    $servername     = $_ENV['DB_SERVER_NAME'];
+    $username       = $_ENV['DB_USER_NAME'];
+    $password       = $_ENV['DB_PWD'];
+    $dbname         = $_ENV['DB_NAME'];
+
     // Create connection
     return new PDO("pgsql:host=$servername;dbname=$dbname", $username, $password);
 }
@@ -63,9 +68,9 @@ function db_record_select ($table, $columns_data, $where_info = "", $condition =
     $condition = "AND" or "OR"
     ONLY ALLOWS for ONE Conditional statement in the WHERE clause
 
-    $db_result = db_record_select($table, $columns_data, $where_info = "", $condition = "" );
+    $db_result = db_record_select($table, $columns_data [, $where_info] [, $condition] );
     returns assoc array (or false):
-       $db_result[0]['field_name']...
+       $fieldName = $db_result[0]['field_name'];
     for multiple rows returned:
        foreach ($db_result as $row) {
             echo_spaces("Record ID", $row['ringcentral_control_id']);
@@ -108,7 +113,7 @@ function db_record_update ($table, $fields_data, $where_col, $where_data) {
     Usage:
     $table = "shopify_shops";
     $where_col = "column name";
-    $where_data = "column value"
+    $where_data = "column value";
     $fields_data = $fields_data = array(
                 "firstname" => $firstname,
                 "lastname" => $lastname,
@@ -125,10 +130,10 @@ function db_record_update ($table, $fields_data, $where_col, $where_data) {
     }
     $length = strlen($sql);
     $sql = substr($sql, 0, $length - 2) . substr($sql, -1);
-    $sql .= "WHERE $where_col = $where_data ";
+    $sql .= "WHERE $where_col = '$where_data' ";
 
     $stmt = $conn->prepare($sql);
-
+//    echo_spaces("SQL", $sql);
     foreach ($fields_data as $key => $value) {
         $stmt->bindParam(":$key", $fields_data["$key"]);
     }

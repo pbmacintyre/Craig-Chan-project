@@ -5,9 +5,7 @@ require_once('includes/ringcentral-db-functions.inc');
 
 show_errors();
 
-$sdk = ringcentral_sdk();
-
-$webhookId = ringcentral_create_webhook_subscription($sdk) ;
+$webhookId = ringcentral_create_webhook_subscription() ;
 
 echo_spaces("Webhook ID", $webhookId);
 

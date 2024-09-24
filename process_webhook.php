@@ -35,8 +35,9 @@ if (!$incoming_data) {
     exit();
 }
 
-//connect to the SDK
-$sdk = ringcentral_sdk();
+echo_spaces("incoming payload", $incoming_data);
+
+/*
 
 $table = "ringcentral_control";
 $columns_data = array ("from_number",);
@@ -66,7 +67,7 @@ $sdk->platform()->post('/account/~/extension/~/sms',
 /* ============================== */
 
 // now get all admin users related to this account.
-
+/*
 $admins_url = "https://platform.ringcentral.com/restapi/v1.0/account/~/directory/entries";
 
 $admins_params = array(
@@ -98,7 +99,7 @@ $users = $admins_data['records'];
 /* ==================================================== */
 /* ==== trim user records to only admin records ======= */
 /* ==================================================== */
-
+/*
 $i = 1;
 //
 foreach ($users as $value) {
@@ -119,7 +120,7 @@ foreach ($users as $value) {
                 "Accept: application/json",
             ];
 
-            /* ====================== */
+
             $single_user_ch = curl_init();
             curl_setopt($single_user_ch, CURLOPT_URL, $single_user_endpoint);
             curl_setopt($single_user_ch, CURLOPT_RETURNTRANSFER, true);
@@ -149,7 +150,7 @@ foreach ($users as $value) {
 //                    }
 //                }
 //          echo_spaces("Response Object", $resp2->json()->records,1);
-        }
+/*        }
         catch (Exception $e) {
             echo_spaces("Error Message", $e->getMessage());
         }
@@ -219,4 +220,4 @@ if (curl_errno($sms_ch)) {
 }
 curl_close($sms_ch);
 */
-}
+

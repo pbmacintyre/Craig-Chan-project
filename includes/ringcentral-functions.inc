@@ -202,37 +202,40 @@ function ringcentral_build_help ($field) {
     return "<img src='$image_source' title='" . $help_text . "' />";
 }
 
-function ringcentral_create_webhook_subscription ($sdk) {
-    // create watching subscription for audit events
+function ringcentral_create_webhook_subscription () {
+    // create watching subscription webhook for audit events
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
 
-    $subscription_url = "https://" . $_SERVER['HTTP_HOST'] ;
-    if (prod_test() == 0 ) {
-        $subscription_url .= "/craig_chan_project/process_webhook.php" ;
-    } elseif (prod_test() == 1 ) {
-        $subscription_url .= "/process_webhook.php" ;
-    }
+    $webhook_url = $_ENV['RC_WEBHOOK_LISTENING_ADDRESS'];
 
-    try {
-        $api_call = $sdk->platform()->post('/subscription',
-            array(
-                "eventFilters" => array(
-                    "/restapi/v1.0/account/~/directory/entries",
-                ),
-                "expiresIn" => "315360000",
-                "deliveryMode" => array(
-                    "transportType" => "WebHook",
-                    // need full URL for this to work as well
-                    "address" => $subscription_url,
-                )
-            )
-        );
-        $webhook_id = $api_call->json()->id;
-    }
-    catch (\RingCentral\SDK\Http\ApiException $e) {
-        echo_spaces("API Exception", $e->getMessage());
-        exit();
-    }
-    return $webhook_id;
+    $accessToken = get_access_token();
+
+    $endpoint_url = 'https://platform.ringcentral.com/restapi/v1.0/subscription';
+
+    // Create the data array (example for subscribing to message events)
+    $data = [
+        "deliveryMode" => [
+            "transportType" => "WebHook",
+            "address" => $webhook_url // Replace with your actual webhook URL
+        ],
+    ];
+    $ch = curl_init($endpoint_url);
+
+    // Set the cURL options
+    curl_setopt($ch, CURLOPT_POST, true); // Set the request method to POST
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Bearer ' . $accessToken, // Set the Authorization header with the access token
+        'Content-Type: application/json' // Specify the content type as JSON
+    ]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data)); // Attach the data as JSON
+
+    // Execute the cURL request and get the response
+    $response = curl_exec($ch);
+    $responseData = json_decode($response, true);
+
+    // return $webhook_id;
 }
 
 function ringcentral_kill_webhook_subscription ($existing_rc_jwt_key, $shop_type) {
@@ -427,4 +430,56 @@ function post_tm_chat ($rcsdk, $chatId, $team_chat) {
         $result = false;
     }
     return $result;
+}
+function get_new_access_token($refreshToken) {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+
+    $client_id = $_ENV['RC_APP_CLIENT_ID'];
+    $client_secret = $_ENV['RC_APP_CLIENT_SECRET'];
+    $url = 'https://platform.ringcentral.com/restapi/oauth/token';
+
+    $refresh_params = [
+        'grant_type' => 'refresh_token',
+        'refresh_token' => $refreshToken,
+    ];
+    $refresh_headers = [
+        'Authorization: Basic ' . base64_encode($client_id . ':' . $client_secret),
+        'Content-Type: application/x-www-form-urlencoded'
+    ];
+    $new_ch = curl_init();
+    curl_setopt($new_ch, CURLOPT_URL, $url);
+    curl_setopt($new_ch, CURLOPT_POST, true);
+    curl_setopt($new_ch, CURLOPT_POSTFIELDS, http_build_query($refresh_params));
+    curl_setopt($new_ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($new_ch, CURLOPT_HTTPHEADER, $refresh_headers);
+
+    $new_response = curl_exec($new_ch);
+    curl_close($new_ch);
+    $new_data = json_decode($new_response, true);
+    $newAccessToken = $new_data['access_token'];
+    $newRefreshToken = $new_data['refresh_token'];
+    // save back to DB
+    $table = "tokens";
+    $where_col = "account";
+    $where_data = "3058829020";
+    $fields_data = $fields_data = array(
+        "access" => $newAccessToken,
+        "refresh" => $newRefreshToken,
+    );
+    db_record_update ($table, $fields_data, $where_col, $where_data);
+
+//    echo_spaces("new access token", $newAccessToken, 2);
+
+     return $newAccessToken;
+}
+
+function get_access_token() {
+
+    /* get the access token */
+    $table = "tokens";
+    $columns_data = array("access", "refresh");
+    $where_info = array("account", "3058829020");
+    $db_result = db_record_select($table, $columns_data, $where_info);
+    return $db_result[0]['access'];
 }

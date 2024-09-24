@@ -75,12 +75,12 @@ function show_form ($message, $label = "", $print_again = false) { ?>
 /*  --- MAIN --- */
 /* ============= */
 if (isset($_POST['authorize'])) {
-
-    $client_id = '24pu9Cwlu1fcAtmSh5osBv';
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/includes');
+    $dotenv->load();
+    $client_id = $_ENV['RC_APP_CLIENT_ID'];
     $authorization_url = "https://platform.ringcentral.com/restapi/oauth/authorize?response_type=code&client_id={$client_id}";
 
     header("Location: $authorization_url");
-
 } else {
     $_SESSION['login_action'] = false;
     $message = "Please authorize your account. <br/>";
