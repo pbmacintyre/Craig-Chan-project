@@ -240,7 +240,9 @@ function ringcentral_create_webhook_subscription () {
     $response = curl_exec($ch);
     $responseData = json_decode($response, true);
 
-    // return $webhook_id;
+//    echo_spaces("response object", $responseData);
+
+    return $responseData['id'] ;
 }
 
 function ringcentral_kill_webhook_subscription ($existing_rc_jwt_key, $shop_type) {

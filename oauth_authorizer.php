@@ -1,19 +1,17 @@
 <?php
-ob_start();
-session_start();
 
-require_once('includes/ringcentral-php-functions.inc');
 require_once('includes/ringcentral-db-functions.inc');
-require_once('includes/ringcentral-functions.inc');
 
-show_errors();
+require('includes/vendor/autoload.php');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/includes");
+$dotenv->load();
 
-$client_id = '24pu9Cwlu1fcAtmSh5osBv';
-$client_secret = 'Z3FNye3kt3kc6Ek6cj1FsF7Cpu4EJHRfhdXt0hz571Jg';
+$client_id = $_ENV['RC_APP_CLIENT_ID'];
+$client_secret = $_ENV['RC_APP_CLIENT_SECRET'];
 
 if (isset($_GET['code'])) {
 
-    $redirect_uri = 'https://paladin-bs.com/craig_chan_project/oauth_authorizer.php';
+    $redirect_uri = $_ENV['RC_REDIRECT_URL'];
     $url = 'https://platform.ringcentral.com/restapi/oauth/token';
 
     $params = [
@@ -38,15 +36,11 @@ if (isset($_GET['code'])) {
     curl_close($ch);
 
     $data = json_decode($response, true);
-//    echo_spaces("data object", $data);
 
     $accessToken = $data['access_token'];
     $refreshToken = $data['refresh_token'];
 
-    /* ============================== */
     /* ====== get account number ==== */
-    /* ============================== */
-
     $account_url = "https://platform.ringcentral.com/restapi/v1.0/account/~";
 
     $account_ch = curl_init();
@@ -65,10 +59,6 @@ if (isset($_GET['code'])) {
     curl_close($account_ch);
     $account_data = json_decode($account_response, true);
     $accountId = $account_data['id'];
-
-//    echo_spaces("Access Token", $accessToken);
-//    echo_spaces("Refresh Token", $refreshToken);
-//    echo_spaces("account #", $accountId);
 
     $table = "tokens";
     // check if this account has already been authorized
