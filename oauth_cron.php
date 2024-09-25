@@ -1,4 +1,9 @@
 <?php
+/**
+ * Copyright (C) 2019-2024 Paladin Business Solutions
+ *
+ */
+
 require('includes/vendor/autoload.php');
 
 //require_once('includes/ringcentral-php-functions.inc');
@@ -51,6 +56,6 @@ foreach ($db_result as $row) {
         "access" => $accessToken,
         "refresh" => $refreshToken,
     );
-    // db_record_update($table, $fields_data, $where_col, $where_data) ;
+    db_record_update($table, $fields_data, $where_col, $where_data) ;
 }
 //echo "all done";

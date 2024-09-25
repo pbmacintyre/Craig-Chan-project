@@ -217,7 +217,7 @@ function ringcentral_create_webhook_subscription () {
     $data = [
         "eventFilters" => [
             "/restapi/v1.0/account/~/directory/entries",
-            "/restapi/v1.0/account/~/extension/~/message-store",
+            // "/restapi/v1.0/account/~/extension/~/message-store",
             ],
         "deliveryMode" => [
             "transportType" => "WebHook",

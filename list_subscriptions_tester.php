@@ -1,7 +1,12 @@
 <?php
+/**
+ * Copyright (C) 2019-2024 Paladin Business Solutions
+ *
+ */
 
 require_once('includes/ringcentral-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
+require_once('includes/ringcentral-curl-functions.inc');
 require_once('includes/ringcentral-db-functions.inc');
 
 show_errors();
@@ -70,10 +75,6 @@ foreach ($subscriptions['records'] as $subscription) {
     echo_spaces("Webhook URI", $subscription['deliveryMode']['address']);
     echo_spaces("Webhook transport type", $subscription['deliveryMode']['transportType'], 2);
 
-//    if ($subscription->id == "5e64753f-d14f-437c-af83-c43621e654af") {
-//        $response = $sdk->platform()->delete("/restapi/v1.0/subscription/{$subscription->id}");
-//        echo_spaces("Subscription ID Deleted", $subscription->id);
-//    }
 }
 
 

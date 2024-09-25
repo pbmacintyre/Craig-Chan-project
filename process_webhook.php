@@ -9,7 +9,18 @@
 
 require_once('includes/ringcentral-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
+require_once('includes/ringcentral-curl-functions.inc');
 require_once('includes/ringcentral-db-functions.inc');
+
+require('includes/vendor/autoload.php');
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/includes");
+$dotenv->load();
+
+show_errors();
+
+$client_id = $_ENV['RC_APP_CLIENT_ID'];
+$client_secret = $_ENV['RC_APP_CLIENT_SECRET'];
 
 $hvt = isset($_SERVER['HTTP_VALIDATION_TOKEN']) ? $_SERVER['HTTP_VALIDATION_TOKEN'] : '';
 if (strlen($hvt) > 0) {
@@ -35,7 +46,79 @@ if (!$incoming_data) {
     exit();
 }
 
-echo_spaces("incoming payload", $incoming_data);
+echo_spaces("incoming payload account #", $incoming_data->body->contacts['0']->account->id );
+//echo_spaces("incoming payload info", $incoming_data);
+
+$accountId = $incoming_data->body->contacts['0']->account->id ;
+
+// with the account id
+// [1] get the access token
+// [2] get the audit trail information
+// [3] find all admin users
+// [4] send events from last 15 minutes to admins via SMS and
+// [5] post the event to a TM group
+
+/* === [1] get the access token  === */
+$table = "tokens";
+$columns_data = array("access", "refresh");
+$where_info = array("account", $accountId);
+$db_result = db_record_select($table, $columns_data, $where_info);
+$accessToken = $db_result[0]['access'];
+$refreshToken = $db_result[0]['refresh'];
+
+/* === [2] get the audit trail information  === */
+
+$dateTime = new DateTime('now', new DateTimeZone('AST'));
+$startDateTime = $dateTime->modify('-15 minutes')->format('Y-m-d\TH:i:s.v\Z');
+$startDateTime = '2024-09-24T00:00:00.000Z';
+
+$dateTime = new DateTime('now', new DateTimeZone('AST'));
+$endDateTime = $dateTime->format('Y-m-d\TH:i:s.v\Z');
+$endDateTime = '2024-09-26T00:00:00.000Z';
+
+echo_spaces("start date", $startDateTime);
+echo_spaces("end date", $endDateTime);
+
+$url = "https://platform.ringcentral.com/restapi/v1.0/account/~/audit-trail/search";
+
+$params = [
+    'eventTimeFrom' => $startDateTime,
+    'eventTimeTo' => $endDateTime,
+    'page' => 1,
+    'perPage' => 100,
+    'includeAdmins' => True,
+    'includeHidden' => True,
+];
+
+$headers = [
+    "Authorization: Bearer $accessToken",
+    "Content-Type: application/json",
+];
+
+$ch = curl_init($url);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+$data = json_decode($response, true);
+
+//echo_spaces("data object", $data);
+
+// build an array of events that are applicable to sending to Admins
+$audit_data = [
+    "eventType" => $data['records'][1]['eventType'],
+    "actionId" => $data['records'][1]['actionID'],
+    "key" => $data['records'][1]['details']['parameters'][0]['key'],
+    "value" => $data['records'][1]['details']['parameters'][0]['value'],
+    "name" => $data['records']['name'],
+//    "actionId" => $data['records']['accountID'],
+];
+
+echo_spaces("audit array", $audit_data);
 
 /*
 
