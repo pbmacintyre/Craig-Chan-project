@@ -215,9 +215,13 @@ function ringcentral_create_webhook_subscription () {
 
     // Create the data array (example for subscribing to message events)
     $data = [
+        "eventFilters" => [
+            "/restapi/v1.0/account/~/directory/entries",
+            "/restapi/v1.0/account/~/extension/~/message-store",
+            ],
         "deliveryMode" => [
             "transportType" => "WebHook",
-            "address" => $webhook_url // Replace with your actual webhook URL
+            "address" => $webhook_url // WEBHOOK_LISTENING_ADDRESS URL
         ],
     ];
     $ch = curl_init($endpoint_url);
@@ -227,7 +231,8 @@ function ringcentral_create_webhook_subscription () {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Authorization: Bearer ' . $accessToken, // Set the Authorization header with the access token
-        'Content-Type: application/json' // Specify the content type as JSON
+        'Content-Type: application/json', // Specify the content type as JSON
+        'accept: application/json',
     ]);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data)); // Attach the data as JSON
 

@@ -19,7 +19,7 @@ if (!$_SESSION['loop_count']) {
 
 if (isset($_GET['code'])) {
 
-    $redirect_uri = 'https://paladin-bs.com/craig_chan_project/oauth_sample.php';
+    $redirect_uri = 'https://paladin-bs.com/craig_chan_project/oauth_authorizer.php';
     $url = 'https://platform.ringcentral.com/restapi/oauth/token';
 
     $params = [

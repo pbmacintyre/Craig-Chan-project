@@ -153,3 +153,15 @@ function db_record_delete ($table, $where_col, $where_data) {
     $stmt->bindParam(':where_data', $where_data);
     $stmt->execute();
 }
+function db_empty_table ($table) {
+    /*
+    Usage:
+    $table = "shopify_shops";
+    db_empty_table ($table);
+    */
+    $conn = db_credentials();
+    $sql = "DELETE FROM $table WHERE $where_col = :where_data ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':where_data', $where_data);
+    $stmt->execute();
+}

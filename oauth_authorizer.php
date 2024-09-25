@@ -13,7 +13,7 @@ $client_secret = 'Z3FNye3kt3kc6Ek6cj1FsF7Cpu4EJHRfhdXt0hz571Jg';
 
 if (isset($_GET['code'])) {
 
-    $redirect_uri = 'https://paladin-bs.com/craig_chan_project/oauth_sample.php';
+    $redirect_uri = 'https://paladin-bs.com/craig_chan_project/oauth_authorizer.php';
     $url = 'https://platform.ringcentral.com/restapi/oauth/token';
 
     $params = [

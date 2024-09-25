@@ -34,7 +34,7 @@ $subscription_response = curl_exec($subscription_ch);
 curl_close($subscription_ch);
 $subscriptions = json_decode($subscription_response, true);
 
-echo_spaces("Subscription response", $subscriptions);
+//echo_spaces("Subscription response", $subscriptions);
 
 if ($subscriptions['errorCode'] == "TokenInvalid") {
     echo_spaces("New access token needed");
@@ -59,13 +59,16 @@ if ($subscriptions['errorCode'] == "TokenInvalid") {
 
 //echo_spaces("Listing subscriptions", $subscriptions);
 
-foreach ($subscriptions as $subscription) {
-    echo_spaces("Subscription array", $subscription);
-    /* echo_spaces("Subscription ID", $subscription->id);
-    echo_spaces("Creation Time", $subscription->creationTime);
-    echo_spaces("Event Filter URI", $subscription->eventFilters[0]);
-    echo_spaces("Webhook URI", $subscription->deliveryMode->address);
-    echo_spaces("Webhook transport type", $subscription->deliveryMode->transportType, 2); */
+foreach ($subscriptions['records'] as $subscription) {
+    // echo_spaces("Individual Subscription array", $subscription);
+    echo_spaces("Subscription ID", $subscription['id']);
+    echo_spaces("Creation Time", $subscription['creationTime']);
+    // do a for each next line if needed.
+    foreach ($subscription['eventFilters'] as $key => $filter) {
+        echo_spaces("Event Filter URI $key", $subscription['eventFilters'][$key]);
+    }
+    echo_spaces("Webhook URI", $subscription['deliveryMode']['address']);
+    echo_spaces("Webhook transport type", $subscription['deliveryMode']['transportType'], 2);
 
 //    if ($subscription->id == "5e64753f-d14f-437c-af83-c43621e654af") {
 //        $response = $sdk->platform()->delete("/restapi/v1.0/subscription/{$subscription->id}");
