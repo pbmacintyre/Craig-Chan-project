@@ -1,9 +1,1 @@
-{"uuid":"24702535278794980","event":"/restapi/v1.0/account/3058829020/directory/entries",
-"timestamp":"2024-09-25T17:24:57.408Z","subscriptionId":"02e55e37-8412-4691-9409-fe4ab7ea910f",
-"ownerId":"2412476021","body":{"contacts":[{"eventType":"Update",
-"oldEtag":"d44fbd49a6f11d95a7f4dd44dcee539017a42a64823bcf3ee5e135fcbca09eeb",
-"newEtag":"1e93cad0567fdfba60e30eb93bcc547934cda1c4118222332218804c956585cd",
-"id":"2412476021","type":"User","status":"Enabled","firstName":"Peter","lastName":"MacIntyre",
-"department":"light comedy dept","email":"peter_maci@hotmail.com","extensionNumber":"12001",
-"account":{"id":"3058829020"},"phoneNumbers":[{"phoneNumber":"+16502950182","type":"VoiceFax",
-"formattedPhoneNumber":"+1 (650) 2950182","usageType":"DirectNumber","primary":true}]}]}}
+{"uuid":"2875773559226907085","event":"/restapi/v1.0/account/3058829020/directory/entries","timestamp":"2024-09-26T20:08:19.341Z","subscriptionId":"e957a675-5713-4e12-8a47-21820869bbe7","ownerId":"2412476021","body":{"contacts":[{"eventType":"Update","oldEtag":"75023b836d254dca70369b73f75d6029c469130746b2cc8dd468ddd8d3e7c5b0","newEtag":"593c90e8f2863dba9a5281e1448e52564d10ddb7ea32602760d0b34237390ba6","id":"2421611021","type":"User","status":"Enabled","firstName":"Peter","lastName":"MacIntyre 2","department":"light comedy dept 2","email":"info@paladin-bs.com","extensionNumber":"12004","account":{"id":"3058829020"},"phoneNumbers":[{"phoneNumber":"+19023320720","type":"VoiceFax","formattedPhoneNumber":"+1 (902) 3320720","usageType":"DirectNumber","primary":true}]}]}}

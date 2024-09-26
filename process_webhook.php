@@ -70,11 +70,11 @@ $refreshToken = $db_result[0]['refresh'];
 
 $dateTime = new DateTime('now', new DateTimeZone('AST'));
 $startDateTime = $dateTime->modify('-15 minutes')->format('Y-m-d\TH:i:s.v\Z');
-$startDateTime = '2024-09-24T00:00:00.000Z';
+$startDateTime = '2024-09-26T00:00:00.000Z';
 
 $dateTime = new DateTime('now', new DateTimeZone('AST'));
 $endDateTime = $dateTime->format('Y-m-d\TH:i:s.v\Z');
-$endDateTime = '2024-09-26T00:00:00.000Z';
+$endDateTime = '2024-09-27T00:00:00.000Z';
 
 echo_spaces("start date", $startDateTime);
 echo_spaces("end date", $endDateTime);
@@ -114,6 +114,7 @@ foreach ($data['records'] as $key => $value)
         // build an array of events that are applicable to sending to Admins
         $audit_data[$key] = [
             "eventType" => $value['eventType'],
+            "eventTime" => $value['eventTime'],
 //            "actionId" => $value['actionId'],
             "Element Affected" => $value['details']['parameters'][0]['value'],
             "old value" => $value['details']['parameters'][1]['value'],
