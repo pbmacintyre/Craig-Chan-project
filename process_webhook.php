@@ -107,17 +107,26 @@ curl_close($ch);
 $data = json_decode($response, true);
 
 //echo_spaces("data object", $data);
+$audit_data = array();
 
-// build an array of events that are applicable to sending to Admins
-$audit_data = [
-    "eventType" => $data['records'][1]['eventType'],
-    "actionId" => $data['records'][1]['actionID'],
-    "key" => $data['records'][1]['details']['parameters'][0]['key'],
-    "value" => $data['records'][1]['details']['parameters'][0]['value'],
-    "name" => $data['records']['name'],
+foreach ($data['records'] as $key => $value)
+    if ($value['actionId'] == "CHANGE_USER_INFO:USER") {
+        // build an array of events that are applicable to sending to Admins
+        $audit_data[$key] = [
+            "eventType" => $value['eventType'],
+//            "actionId" => $value['actionId'],
+            "Element Affected" => $value['details']['parameters'][0]['value'],
+            "old value" => $value['details']['parameters'][1]['value'],
+            "new value" => $value['details']['parameters'][2]['value'],
+            "initiator name" => $value['initiator']['name'],
+            "initiator extensionId" => $value['initiator']['extensionId'],
+            "initiator extensionNumber" => $value['initiator']['extensionNumber'],
+            "target name" => $value['target']['name'],
+            "target extensionId" => $value['target']['objectId'],
+            "target extensionNumber" => $value['target']['extensionNumber'],
 //    "actionId" => $data['records']['accountID'],
-];
-
+        ];
+    }
 echo_spaces("audit array", $audit_data);
 
 /*
