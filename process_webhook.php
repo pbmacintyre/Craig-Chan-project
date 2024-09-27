@@ -34,7 +34,7 @@ file_put_contents("received_EVENT_payload.log", $incoming);
 
 if (empty($incoming)) {
     http_response_code(200);
-    echo json_encode(array('responseType'=>'error', 'responseDescription'=>'No data provided Check SMS payload.'));
+    echo json_encode(array('responseType' => 'error', 'responseDescription' => 'No data provided Check SMS payload.'));
     exit();
 }
 
@@ -42,14 +42,16 @@ $incoming_data = json_decode($incoming);
 
 if (!$incoming_data) {
     http_response_code(200);
-    echo json_encode(array('responseType'=>'error', 'responseDescription'=>'Media type not supported.  Please use JSON.'));
+    echo json_encode(array('responseType' => 'error', 'responseDescription' => 'Media type not supported.  Please use JSON.'));
     exit();
 }
 
-echo_spaces("incoming payload account #", $incoming_data->body->contacts['0']->account->id );
-//echo_spaces("incoming payload info", $incoming_data);
+//echo_spaces("incoming payload account #", $incoming_data->body->contacts['0']->account->id);
 
-$accountId = $incoming_data->body->contacts['0']->account->id ;
+$accountId = $incoming_data->body->contacts['0']->account->id;
+$timeStamp = $incoming_data->timestamp;
+
+//echo_spaces("incoming time stamp", $timeStamp);
 
 // with the account id
 // [1] get the access token
@@ -67,69 +69,15 @@ $accessToken = $db_result[0]['access'];
 $refreshToken = $db_result[0]['refresh'];
 
 /* === [2] get the audit trail information  === */
+$audit_data = get_audit_data($accessToken, $timeStamp);
+//echo_spaces("audit array", $audit_data);
 
-$dateTime = new DateTime('now', new DateTimeZone('AST'));
-$startDateTime = $dateTime->modify('-15 minutes')->format('Y-m-d\TH:i:s.v\Z');
-$startDateTime = '2024-09-26T00:00:00.000Z';
+// [3] find all admin users
+$allAdmins = get_admins($accessToken);
+//echo_spaces("admin array", $allAdmins);
 
-$dateTime = new DateTime('now', new DateTimeZone('AST'));
-$endDateTime = $dateTime->format('Y-m-d\TH:i:s.v\Z');
-$endDateTime = '2024-09-27T00:00:00.000Z';
-
-echo_spaces("start date", $startDateTime);
-echo_spaces("end date", $endDateTime);
-
-$url = "https://platform.ringcentral.com/restapi/v1.0/account/~/audit-trail/search";
-
-$params = [
-    'eventTimeFrom' => $startDateTime,
-    'eventTimeTo' => $endDateTime,
-    'page' => 1,
-    'perPage' => 100,
-    'includeAdmins' => True,
-    'includeHidden' => True,
-];
-
-$headers = [
-    "Authorization: Bearer $accessToken",
-    "Content-Type: application/json",
-];
-
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-$response = curl_exec($ch);
-curl_close($ch);
-
-$data = json_decode($response, true);
-
-//echo_spaces("data object", $data);
-$audit_data = array();
-
-foreach ($data['records'] as $key => $value)
-    if ($value['actionId'] == "CHANGE_USER_INFO:USER") {
-        // build an array of events that are applicable to sending to Admins
-        $audit_data[$key] = [
-            "eventType" => $value['eventType'],
-            "eventTime" => $value['eventTime'],
-//            "actionId" => $value['actionId'],
-            "Element Affected" => $value['details']['parameters'][0]['value'],
-            "old value" => $value['details']['parameters'][1]['value'],
-            "new value" => $value['details']['parameters'][2]['value'],
-            "initiator name" => $value['initiator']['name'],
-            "initiator extensionId" => $value['initiator']['extensionId'],
-            "initiator extensionNumber" => $value['initiator']['extensionNumber'],
-            "target name" => $value['target']['name'],
-            "target extensionId" => $value['target']['objectId'],
-            "target extensionNumber" => $value['target']['extensionNumber'],
-//    "actionId" => $data['records']['accountID'],
-        ];
-    }
-echo_spaces("audit array", $audit_data);
-
+send_admin_sms ($allAdmins, $audit_data, $accessToken);
+send_team_message ($audit_data, $accessToken);
 /*
 
 $table = "ringcentral_control";
