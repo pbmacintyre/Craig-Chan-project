@@ -208,8 +208,14 @@ function ringcentral_create_webhook_subscription () {
     $dotenv->load();
 
     $webhook_url = $_ENV['RC_WEBHOOK_LISTENING_ADDRESS'];
+    $accountId = $_ENV['RC_APP_ACCOUNT_ID'];
 
-    $accessToken = get_access_token();
+    /* get the access token */
+    $table = "ringcentral_control";
+    $columns_data = array("access");
+    $where_info = array("account", $accountId);
+    $db_result = db_record_select($table, $columns_data, $where_info);
+    $accessToken = $db_result[0]['access'];
 
     $endpoint_url = 'https://platform.ringcentral.com/restapi/v1.0/subscription';
 

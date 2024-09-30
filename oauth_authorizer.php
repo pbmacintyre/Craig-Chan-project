@@ -1,6 +1,9 @@
 <?php
 
 require_once('includes/ringcentral-db-functions.inc');
+require_once('includes/ringcentral-php-functions.inc');
+
+show_errors();
 
 require('includes/vendor/autoload.php');
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/includes");
@@ -12,7 +15,7 @@ $client_secret = $_ENV['RC_APP_CLIENT_SECRET'];
 if (isset($_GET['code'])) {
 
     $redirect_uri = $_ENV['RC_REDIRECT_URL'];
-    $url = 'https://platform.ringcentral.com/restapi/oauth/token';
+    $endpoint = 'https://platform.ringcentral.com/restapi/oauth/token';
 
     $params = [
         'grant_type' => 'authorization_code',
@@ -26,7 +29,7 @@ if (isset($_GET['code'])) {
     ];
 
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_URL, $endpoint);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -65,6 +68,9 @@ if (isset($_GET['code'])) {
     $columns_data = array("token_id");
     $where_info = array("account", $accountId);
     $db_result = db_record_select($table, $columns_data, $where_info);
+
+//    echo_spaces("DB result", $db_result);
+
     if (empty($db_result)) {
         // not in DB, not already authorized, so save it
         $columns_data = array(
@@ -72,7 +78,7 @@ if (isset($_GET['code'])) {
             "access" => $accessToken,
             "refresh" => $refreshToken,);
         db_record_insert($table, $columns_data);
-        header("Location: authorized.php?authorized=1");
+         header("Location: authorized.php?authorized=1");
     } else {
         header("Location: authorized.php?authorized=0");
     }

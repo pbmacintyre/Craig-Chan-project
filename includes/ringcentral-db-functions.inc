@@ -70,6 +70,7 @@ function db_record_select ($table, $columns_data, $where_info = "", $condition =
 
     $db_result = db_record_select($table, $columns_data [, $where_info] [, $condition] );
     returns assoc array (or false):
+    for 1 row returned:
        $fieldName = $db_result[0]['field_name'];
     for multiple rows returned:
        foreach ($db_result as $row) {
