@@ -1,17 +1,11 @@
 <?php
-/**
- * Copyright (C) 2019-2024 Paladin Business Solutions
- *
- */
 
-require_once('includes/ringcentral-php-functions.inc');
-require_once('includes/ringcentral-db-functions.inc');
-require_once('includes/ringcentral-functions.inc');
-require_once('includes/ringcentral-curl-functions.inc');
+require_once(__DIR__ . '/includes/ringcentral-php-functions.inc');
+require_once(__DIR__ . '/includes/ringcentral-db-functions.inc');
+require_once(__DIR__ . '/includes/ringcentral-functions.inc');
+require_once(__DIR__ . '/includes/ringcentral-curl-functions.inc');
 
-show_errors();
-
-require('includes/vendor/autoload.php');
+require(__DIR__ . '/includes/vendor/autoload.php');
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/includes");
 $dotenv->load();
@@ -44,7 +38,6 @@ $columns_data = array("refresh");
 $where_info = array("ringcentral_control_id", 1);
 $db_result = db_record_select($table, $columns_data, $where_info);
 
-//$tokens = refresh_tokens($refresh, $client_id, $client_secret);
 $tokens = refresh_tokens($db_result[0]['refresh'], $client_id, $client_secret);
 
 // save newly created tokens
@@ -57,5 +50,8 @@ $fields_data = $fields_data = array(
 );
 db_record_update($table, $fields_data, $where_col, $where_data);
 
-send_basic_sms ($tokens['accessToken']);
+//echo "all done";
+$message = "CRON runs every 30 minutes";
+//send_basic_sms ($tokens['accessToken'], $message);
 
+?>

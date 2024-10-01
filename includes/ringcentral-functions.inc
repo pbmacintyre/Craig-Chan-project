@@ -268,9 +268,9 @@ function ringcentral_kill_webhook_subscription ($existing_rc_jwt_key, $shop_type
     $sdk->platform()->delete("/subscription/{$webhook_token}");
 }
 
-// setup Mail Gun class for use
-require_once('includes/vendor/autoload.php');
-use Mailgun\Mailgun;
+//// setup Mail Gun class for use
+//require_once('includes/vendor/autoload.php');
+//use Mailgun\Mailgun;
 
 function send_mailgun_email ($email, $subject, $body) {
 

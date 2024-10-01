@@ -306,24 +306,20 @@ function get_new_access_token ($refreshToken) {
     return $newAccessToken;
 }
 
-function send_basic_sms ($accessToken) {
+function send_basic_sms ($accessToken, $message) {
 
     $endpoint = 'https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/sms';
 
     $fromNumber = ringcentral_get_from_phone();
-
-    $sms_headers = [
-        'Authorization: Bearer ' . $accessToken,
-        "Content-Type: application/json"
-    ];
-
-    $message = "The CRON ran as planned";
-//        echo_spaces("Text message $count", $message);
-
     $sms_data = [
         'from' => array('phoneNumber' => $fromNumber),
         'to' => array(array('phoneNumber' => '+19029405827')),
         'text' => $message,
+    ];
+
+    $sms_headers = [
+        'Authorization: Bearer ' . $accessToken,
+        "Content-Type: application/json"
     ];
 
     $sms_ch = curl_init();
