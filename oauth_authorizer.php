@@ -19,7 +19,7 @@ if (isset($_GET['code'])) {
 
     $params = [
         'grant_type' => 'authorization_code',
-        'code' => $_GET['code'],
+        'code' => strip_tags($_GET['code']),
         'redirect_uri' => $redirect_uri,
     ];
 
