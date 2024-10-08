@@ -12,7 +12,7 @@ require_once('includes/ringcentral-db-functions.inc');
 show_errors();
 
 /* get the access token */
-$table = "tokens";
+$table = "clients";
 $columns_data = array("access", "refresh");
 $where_info = array("account", "3058829020");
 $db_result = db_record_select($table, $columns_data, $where_info);

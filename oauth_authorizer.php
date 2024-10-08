@@ -2,6 +2,7 @@
 
 require_once('includes/ringcentral-db-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
+require_once('includes/ringcentral-curl-functions.inc');
 
 show_errors();
 
@@ -19,7 +20,7 @@ if (isset($_GET['code'])) {
 
     $params = [
         'grant_type' => 'authorization_code',
-        'code' => strip_tags($_GET['code']),
+        'code' => htmlentities(strip_tags($_GET['code'])),
         'redirect_uri' => $redirect_uri,
     ];
 
@@ -40,10 +41,13 @@ if (isset($_GET['code'])) {
 
     $data = json_decode($response, true);
 
-    $accessToken = $data['access_token'];
-    $refreshToken = $data['refresh_token'];
+//    echo_spaces("authorization data", $data);
 
-    /* ====== get account number ==== */
+    $accessToken    = $data['access_token'];
+    $refreshToken   = $data['refresh_token'];
+    $extensionId    = $data['owner_id'];
+
+    /* ====== get user account information ==== */
     $account_url = "https://platform.ringcentral.com/restapi/v1.0/account/~";
 
     $account_ch = curl_init();
@@ -61,26 +65,36 @@ if (isset($_GET['code'])) {
     $account_response = curl_exec($account_ch);
     curl_close($account_ch);
     $account_data = json_decode($account_response, true);
+//    echo_spaces("account data", $account_data);
     $accountId = $account_data['id'];
 
-    $table = "tokens";
+    $table = "clients";
     // check if this account has already been authorized
-    $columns_data = array("token_id");
-    $where_info = array("account", $accountId);
-    $db_result = db_record_select($table, $columns_data, $where_info);
+    $columns_data = array("client_id");
+    $where_info = array ("account", $accountId, "extension_id", $extensionId, );
+    $condition = "AND" ;
+    $db_result = db_record_select($table, $columns_data, $where_info, $condition);
 
 //    echo_spaces("DB result", $db_result);
 
-    if (empty($db_result)) {
-        // not in DB, not already authorized, so save it
+    if ($db_result) $inDB = true;
+//    and if the user is admin level
+    if (is_admin($accessToken, $accountId, $extensionId)) $isAdmin = true;
+
+    if ($inDB) {
+        $auth = 0 ;
+    } elseif (!$isAdmin) {
+        $auth = 0 ;
+    } elseif (!$inDB && $isAdmin) {
+        // save the infomration to the DB
         $columns_data = array(
             "account" => $accountId,
+            "extension_id" => $extensionId,
             "access" => $accessToken,
             "refresh" => $refreshToken,);
         db_record_insert($table, $columns_data);
-         header("Location: authorized.php?authorized=1");
-    } else {
-        header("Location: authorized.php?authorized=0");
+        $auth = 1 ;
     }
-
+        header("Location: authorized.php?authorized=$auth");
 }
+

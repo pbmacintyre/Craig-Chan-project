@@ -61,7 +61,7 @@ $timeStamp = $incoming_data->timestamp;
 // [5] post the event to a TM group
 
 /* === [1] get the access token  === */
-$table = "tokens";
+$table = "clients";
 $columns_data = array("access", "refresh");
 $where_info = array("account", $accountId);
 $db_result = db_record_select($table, $columns_data, $where_info);

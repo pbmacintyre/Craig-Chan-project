@@ -262,7 +262,7 @@ function refresh_tokens ($refreshToken, $client_id, $client_secret) {
 
 function get_new_access_token ($refreshToken) {
     // only used in testing code. New access tokens are generated
-    // in the CRON every 45 minutes
+    // in the CRON every 30 minutes
 
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->load();
@@ -292,7 +292,7 @@ function get_new_access_token ($refreshToken) {
     $newAccessToken = $new_data['access_token'];
     $newRefreshToken = $new_data['refresh_token'];
     // save back to DB
-    $table = "tokens";
+    $table = "clients";
     $where_col = "account";
     $where_data = "3058829020";
     $fields_data = $fields_data = array(
@@ -333,3 +333,33 @@ function send_basic_sms ($accessToken, $message) {
     curl_close($sms_ch);
 }
 
+function is_admin ($accessToken, $accountId, $extensionId) {
+    $admin = false;
+    try {
+        $endpoint = "https://platform.ringcentral.com/restapi/v1.0/account/$accountId/extension/$extensionId";
+
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $endpoint,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . $accessToken,
+                'Content-Type: application/json'
+            ]
+        ]);
+
+        $resp = curl_exec($ch);
+        curl_close($ch);
+        $data = json_decode($resp, true);
+
+        if ($data['permissions']['admin']['enabled']) {
+            $admin = true;
+        }
+
+    }
+    catch (Exception $e) {
+        echo_spaces("Error Message resp", $e->getMessage());
+    }
+
+    return $admin;
+}

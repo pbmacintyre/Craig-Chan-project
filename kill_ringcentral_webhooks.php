@@ -19,7 +19,7 @@ $client_id = $_ENV['RC_APP_CLIENT_ID'];
 $client_secret = $_ENV['RC_APP_CLIENT_SECRET'];
 
 /* get the access token */
-$table = "tokens";
+$table = "clients";
 $columns_data = array("access", "refresh");
 $where_info = array("account", "3058829020");
 $db_result = db_record_select($table, $columns_data, $where_info);

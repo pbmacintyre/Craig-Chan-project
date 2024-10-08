@@ -47,7 +47,7 @@ $auth = $_GET['authorized'] ;
 if ($auth == 1) {
     $message = "Your account has been authorized. <br/>";
 } else {
-    $message = "Your account has already been authorized. <br/>";
+    $message = "Your account has already been authorized <br/>or it is not an admin level account. <br/>";
 }
 show_form($message);
 
