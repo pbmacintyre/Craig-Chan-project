@@ -77,15 +77,11 @@ if (isset($_GET['code'])) {
 
 //    echo_spaces("DB result", $db_result);
 
-    if ($db_result) $inDB = true;
-//    and if the user is admin level
     if (is_admin($accessToken, $accountId, $extensionId)) $isAdmin = true;
 
-    if ($inDB) {
+    if ($db_result || is_admin($accessToken, $accountId, $extensionId) == false) {
         $auth = 0 ;
-    } elseif (!$isAdmin) {
-        $auth = 0 ;
-    } elseif (!$inDB && $isAdmin) {
+    } else {
         // save the infomration to the DB
         $columns_data = array(
             "account" => $accountId,
