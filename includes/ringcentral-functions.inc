@@ -389,33 +389,6 @@ function base64url_encode ($plainText) {
     $base64url = strtr($base64, '+/', '-_');
     return ($base64url);
 }
-/* ============================================= */
-/* Get list of Team Messaging Group Chats (Teams) */
-/* ============================================= */
-function list_tm_teams () {
-
-    $controller = ringcentral_sdk();
-    $platform = $controller['platform'];
-    $sdk = $controller['SDK'];
-
-    $endpoint = "/team-messaging/v1/chats";
-
-    $params = array(
-//        'type' => array('Team'),
-        'type' => array( 'Everyone', 'Group', 'Personal', 'Direct', 'Team' ),
-        //'recordCount' => 2,
-    );
-
-    try {
-        $resp = $platform->get($endpoint, $params);
-    }
-    catch (\RingCentral\SDK\Http\ApiException $e) {
-        //echo_spaces("Error message", $e->getMessage());
-        $resp = $e->getMessage() ;
-    }
-
-    return $resp;
-}
 
 /* =============================================== */
 /* Post text to Team Messaging Group Chats (Teams) */
@@ -443,4 +416,10 @@ function post_tm_chat ($rcsdk, $chatId, $team_chat) {
         $result = false;
     }
     return $result;
+}
+function ringcentral_valid_mobile ($mobile) {
+    // only take the digits, strip out brackets and dashes if they are there
+    $digits_only = preg_replace('/[^0-9]/', '', $mobile);
+
+    return $digits_only ;
 }

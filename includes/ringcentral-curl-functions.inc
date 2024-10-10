@@ -363,3 +363,35 @@ function is_admin ($accessToken, $accountId, $extensionId) {
 
     return $admin;
 }
+
+/* ============================================= */
+/* Get list of Team Messaging Group Chats (Teams) */
+/* ============================================= */
+function list_tm_teams ($accessToken) {
+
+    $endpoint = "https://platform.ringcentral.com/team-messaging/v1/chats";
+
+    $params = [
+        'type' => 'Team',
+//        'type' => array( 'Everyone', 'Group', 'Personal', 'Direct', 'Team' ),
+        'recordCount' => 30,
+    ];
+
+    $endpoint .= '?' . http_build_query($params);
+
+    $headers = [
+        'Authorization: Bearer ' . $accessToken,
+        "Content-Type: application/json",
+    ];
+
+    $tm_ch = curl_init($endpoint);
+    curl_setopt($tm_ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($tm_ch, CURLOPT_HTTPHEADER, $headers);
+
+    $resp = curl_exec($tm_ch);
+    $data = json_decode($resp, true);
+    // Close the cURL session
+    curl_close($tm_ch);
+
+    return $data;
+}

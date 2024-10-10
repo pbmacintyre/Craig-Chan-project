@@ -1,5 +1,8 @@
 <?php
 
+ob_start();
+session_start();
+
 require_once('includes/ringcentral-db-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
 require_once('includes/ringcentral-curl-functions.inc');
@@ -89,8 +92,10 @@ if (isset($_GET['code'])) {
             "access" => $accessToken,
             "refresh" => $refreshToken,);
         db_record_insert($table, $columns_data);
+        $_SESSION['access_token'] = $accessToken;
         $auth = 1 ;
     }
         header("Location: authorized.php?authorized=$auth");
 }
 
+ob_end_flush();
