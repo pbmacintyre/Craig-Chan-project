@@ -55,7 +55,7 @@ function show_form ($message, $label = "", $print_again = false) {    ?>
             </tr>
             <tr class="CustomTable">
                 <td colspan="2" class="CustomTableFullCol">
-                    <?php echo_plain_text("Version 0.1", "grey", "small"); ?>
+                    <?php app_version(); ?>
                 </td>
             </tr>
         </table>

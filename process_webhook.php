@@ -51,34 +51,40 @@ if (!$incoming_data) {
 $accountId = $incoming_data->body->contacts['0']->account->id;
 $timeStamp = $incoming_data->timestamp;
 
-//echo_spaces("incoming time stamp", $timeStamp);
-
 // with the account id
-// [1] get the access token
+// [1] get records from the DB related to the triggering account in the event payload
 // [2] get the audit trail information
-// [3] find all admin users
-// [4] send events from last 15 minutes to admins via SMS and
-// [5] post the event to a TM group
 
-/* === [1] get the access token  === */
+// [3] send events from last 15 minutes to returned DB records
+// [5] post the same events to a TM group as designated by DB record
+
+/* === [1] get records from the DB related to the triggering account in the event payload */
 $table = "clients";
-$columns_data = array("access", "refresh");
+$columns_data = array("*");
 $where_info = array("account", $accountId);
 $db_result = db_record_select($table, $columns_data, $where_info);
-$accessToken = $db_result[0]['access'];
-$refreshToken = $db_result[0]['refresh'];
+// all records connected to the triggering account
 
-/* === [2] get the audit trail information  === */
-$audit_data = get_audit_data($accessToken, $timeStamp);
+foreach ($db_result as $row) {
+    $extensionId = $row['extension_id'];
+    $from_number = $row['from_number'];
+    $to_number = $row['to_number'];
+    $chatId = $row['team_chat_id'];
+
+    $accessToken = $row['access'];
+    $refreshToken = $row['refresh'];
+
+    /* === [2] get the audit trail information  === */
+    $audit_data = get_audit_data($accessToken, $timeStamp);
+}
+
+
+
 //echo_spaces("audit array", $audit_data);
 
-// [3] find all admin users
-$allAdmins = get_admins($accessToken);
-//echo_spaces("admin array", $allAdmins);
-
 // [4] send event from 5 minutes either side of the event date stamp to admins via SMS
-send_admin_sms ($allAdmins, $audit_data, $accessToken);
+send_admin_sms($allAdmins, $audit_data, $accessToken);
 
 // [5] post the event to a TM group
-send_team_message ($audit_data, $accessToken);
+send_team_message($audit_data, $accessToken);
 

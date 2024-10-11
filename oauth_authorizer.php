@@ -92,6 +92,8 @@ if (isset($_GET['code'])) {
             "access" => $accessToken,
             "refresh" => $refreshToken,);
         db_record_insert($table, $columns_data);
+        $_SESSION['account_id'] = $accountId;
+        $_SESSION['extension_id'] = $extensionId;
         $_SESSION['access_token'] = $accessToken;
         $auth = 1 ;
     }

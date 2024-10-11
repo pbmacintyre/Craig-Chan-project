@@ -293,13 +293,13 @@ function get_new_access_token ($refreshToken) {
     $newRefreshToken = $new_data['refresh_token'];
     // save back to DB
     $table = "clients";
-    $where_col = "account";
-    $where_data = "3058829020";
+    $where_info = array ("account", "3058829020");
     $fields_data = $fields_data = array(
         "access" => $newAccessToken,
         "refresh" => $newRefreshToken,
     );
-    db_record_update($table, $fields_data, $where_col, $where_data);
+
+    db_record_update($table, $fields_data, $where_info) ;
 
 //    echo_spaces("new access token", $newAccessToken, 2);
 

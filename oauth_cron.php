@@ -23,14 +23,13 @@ foreach ($db_result as $row) {
 
     // save newly created client information
     $table = "clients";
-    $where_col = "account";
-    $where_data = $row['account'];
+    $where_info = array ("account", $row['account']);
     $fields_data = $fields_data = array(
         "access" => $clients['accessToken'],
         "refresh" => $clients['refreshToken'],
     );
 
-    db_record_update($table, $fields_data, $where_col, $where_data);
+    db_record_update($table, $fields_data, $where_info);
 }
 
 $message = "CRON runs every 30 minutes";

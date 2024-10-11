@@ -17,6 +17,10 @@ function app_name () {
     echo "Audit Trail Notifications App";
     return "Audit Trail Notifications App";
 }
+
+function app_version () {
+    echo_plain_text("Version 0.1", "grey", "small");
+}
 /* ================== */
 /* Get RingCental SDK */
 /* ================== */
@@ -134,12 +138,12 @@ function ringcentral_gen_and_send_six_digit_code ($to) {
 /* Build ReCaptcha top */
 /* =================== */
 function ringcentral_build_recaptcha_v3_top () {
-    $table = "ringcentral_control";
-    $columns_data = array("grc_site_key");
-    $where_info = array("ringcentral_control_id", 1);
-    $db_result = db_record_select($table, $columns_data, $where_info);
 
-    $site_key = $db_result[0]['grc_site_key'];
+    require(__DIR__ . '/vendor/autoload.php');
+    $dotenv = Dotenv\Dotenv::createImmutable('includes');
+    $dotenv->load();
+
+    $site_key = $_ENV['GRC_SITE_KEY'];
 
     echo "<script src='https://www.google.com/recaptcha/api.js?render=$site_key'></script>";
 }
@@ -148,12 +152,11 @@ function ringcentral_build_recaptcha_v3_top () {
 /* Verify ReCaptcha response */
 /* ========================= */
 function ringcentral_verify_v3_recaptcha ($action) {
-    $table = "ringcentral_control";
-    $columns_data = array("grc_secret_key");
-    $where_info = array("ringcentral_control_id", 1);
-    $db_result = db_record_select($table, $columns_data, $where_info);
+    require(__DIR__ . '/vendor/autoload.php');
+    $dotenv = Dotenv\Dotenv::createImmutable('includes');
+    $dotenv->load();
 
-    $secret_key = $db_result[0]['grc_secret_key'];
+    $secret_key = $_ENV['GRC_SECRET_KEY'];
 
     $token = $_POST['g-recaptcha-response'];
     $ip = $_SERVER['REMOTE_ADDR'];

@@ -11,7 +11,7 @@ require_once('includes/ringcentral-php-functions.inc');
 
 show_errors();
 
-page_header(0);  // set back to 1 when recaptchas are set in the DB
+page_header(1);  // set back to 1 when recaptchas are set in the .ENV file
 
 function show_form ($message, $label = "", $print_again = false) { ?>
     <script>
@@ -63,7 +63,7 @@ function show_form ($message, $label = "", $print_again = false) { ?>
             </tr>
             <tr class="CustomTable">
                 <td colspan="2" class="CustomTableFullCol">
-                    <?php echo_plain_text("Version 0.1", "grey", "small"); ?>
+                    <?php app_version(); ?>
                 </td>
             </tr>
         </table>

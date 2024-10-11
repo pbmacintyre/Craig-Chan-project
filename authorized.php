@@ -35,6 +35,14 @@ function show_form ($message, $auth, $label = "", $print_again = false, $color =
             </tr>
             <?php if ($auth == 1) { ?>
                 <tr>
+                    <td >
+
+                    </td>
+                    <td >
+                        <?php echo_plain_text("Phone number formats: +19991234567","", "small"); ?>
+                    </td>
+                </tr>
+                <tr>
                     <td class="addform_left_col">
                         <p style='display: inline; <?php if ($label == "from_number") echo "color:red"; ?>'>From
                             Number:</p>
@@ -95,7 +103,7 @@ function show_form ($message, $auth, $label = "", $print_again = false, $color =
             <?php } ?>
             <tr class="CustomTable">
                 <td colspan="2" class="CustomTableFullCol">
-                    <?php echo_plain_text("Version 0.1", "grey", "small"); ?>
+                    <?php app_version(); ?>
                 </td>
             </tr>
         </table>
@@ -146,11 +154,21 @@ function check_form ($auth) {
         show_form($message, $auth, $label, $print_again, $color);
     } else {
         // update the record with validated information
-        echo_spaces("Ready to save data");
+//        echo_spaces("Ready to save data");
+        $accountId = $_SESSION['account_id'];
+        $extensionId = $_SESSION['extension_id'];
 
         $table = "clients";
+        $where_info = array ("account", $accountId, "extension_id", $extensionId, );
+        $condition = "AND" ;
+        $fields_data = array(
+            "from_number" => $from_number,
+            "to_number" => $to_number,
+            "team_chat_id" => $chat_id,
+        );
+        db_record_update($table, $fields_data, $where_info, $condition);
 
-
+        header("Location: authorization_complete.php");
 
     }
 }
@@ -162,7 +180,7 @@ $auth = $_GET['authorized'];
 if (isset($_POST['save'])) {
     check_form($auth);
 } elseif ($auth == 1) {
-    $message = "Your account has been authorized. <br/> Please provide the following additional information";
+    $message = "Your account will be authorized. <br/> Please provide the following additional information";
     show_form($message, $auth);
 } else {
     $message = "Your account has already been authorized <br/> or it is not an admin level account. <br/>";

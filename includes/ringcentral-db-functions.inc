@@ -7,14 +7,14 @@
 /* DB interaction functions */
 /* ======================== */
 function db_credentials () {
-
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ );
+    require(__DIR__ . '/vendor/autoload.php');
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->load();
 
-    $servername     = $_ENV['DB_SERVER_NAME'];
-    $username       = $_ENV['DB_USER_NAME'];
-    $password       = $_ENV['DB_PWD'];
-    $dbname         = $_ENV['DB_NAME'];
+    $servername = $_ENV['DB_SERVER_NAME'];
+    $username = $_ENV['DB_USER_NAME'];
+    $password = $_ENV['DB_PWD'];
+    $dbname = $_ENV['DB_NAME'];
 
     // Create connection
     return new PDO("pgsql:host=$servername;dbname=$dbname", $username, $password);
@@ -109,18 +109,27 @@ function db_record_select ($table, $columns_data, $where_info = "", $condition =
     }
 }
 
-function db_record_update ($table, $fields_data, $where_col, $where_data) {
+/**
+ * @param $table
+ * @param $fields_data
+ * @param $where_info
+ * @param $condition
+ * @return void
+ */
+function db_record_update ($table, $fields_data, $where_info = "", $condition = "") {
     /*
     Usage:
     $table = "shopify_shops";
-    $where_col = "column name";
-    $where_data = "column value";
+    $where_info = array ("ringcentral_control_id", 1);  OR
+    $where_info = array ("from_number", "+18084652471", "webhook_token", "5", );
+    $condition = "AND" or "OR"
+    ONLY ALLOWS for ONE Conditional statement in the WHERE clause
     $fields_data = $fields_data = array(
                 "firstname" => $firstname,
                 "lastname" => $lastname,
                 "store_name" => $store_name,
             );
-    db_record_update($table, $fields_data, $where_col, $where_data) ;
+    db_record_update($table, $fields_data, $where_info, $condition) ;
     */
     $conn = db_credentials();
 
@@ -131,7 +140,11 @@ function db_record_update ($table, $fields_data, $where_col, $where_data) {
     }
     $length = strlen($sql);
     $sql = substr($sql, 0, $length - 2) . substr($sql, -1);
-    $sql .= "WHERE $where_col = '$where_data' ";
+
+    $sql .= " WHERE $where_info[0] = '$where_info[1]'";
+    if ($condition) {
+        $sql .= " $condition $where_info[2] = '$where_info[3]'";
+    }
 
     $stmt = $conn->prepare($sql);
 //    echo_spaces("SQL", $sql);
@@ -154,6 +167,7 @@ function db_record_delete ($table, $where_col, $where_data) {
     $stmt->bindParam(':where_data', $where_data);
     $stmt->execute();
 }
+
 function db_empty_table ($table) {
     /*
     Usage:
