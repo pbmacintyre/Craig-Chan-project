@@ -207,6 +207,7 @@ function ringcentral_build_help ($field) {
 
 function ringcentral_create_webhook_subscription () {
     // create watching subscription webhook for audit events
+    require('includes/vendor/autoload.php');
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->load();
 
@@ -214,9 +215,9 @@ function ringcentral_create_webhook_subscription () {
     $accountId = $_ENV['RC_APP_ACCOUNT_ID'];
 
     /* get the access token */
-    $table = "ringcentral_control";
-    $columns_data = array("access");
-    $where_info = array("account", $accountId);
+    $table = "clients";
+    $columns_data = array("access", "refresh");
+    $where_info = array("account", "3058829020");
     $db_result = db_record_select($table, $columns_data, $where_info);
     $accessToken = $db_result[0]['access'];
 

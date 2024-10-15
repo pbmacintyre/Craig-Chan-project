@@ -28,7 +28,8 @@ function get_audit_data ($accessToken, $timeStamp) {
         'includeAdmins' => True,
         'includeHidden' => True,
         // only bring back these types of events from the audit trail
-        "actionIds" => ['CHANGE_USER_INFO:USER'],
+        // there could be a list of different actionIds to bring back
+        "actionIds" => ['CHANGE_USER_INFO:USER',],
     ];
 
     $headers = [
@@ -159,29 +160,32 @@ function get_admins ($accessToken) {
     return $admin_data;
 }
 
-function send_admin_sms ($allAdmins, $audit_data, $accessToken) {
+function send_admin_sms ($destination_array, $audit_data) {
 
     $endpoint = 'https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/sms';
 
-    $fromNumber = ringcentral_get_from_phone();
+    // echo_spaces("destination array", $destination_array);
 
-    $sms_headers = [
-        'Authorization: Bearer ' . $accessToken,
-        "Content-Type: application/json"
-    ];
+    foreach ($destination_array as $value) {
+        $fromNumber = $value['from_number'];
+        $toNumber = $value['to_number'];
+        $sms_headers = [
+            'Authorization: Bearer ' . $value['access'],
+            "Content-Type: application/json"
+        ];
 
-    foreach ($allAdmins as $admin) {
         $settingChanged = $audit_data['Element Affected'];
         $oldValue = $audit_data['old value'];
         $newValue = $audit_data['new value'];
         $initiator = $audit_data['initiator name'];
+        $target_name = $audit_data['target name'];
+        $extension = $audit_data['target extensionId'];
 
-        $message = "The setting '$settingChanged' was changed from '$oldValue' to '$newValue' by: $initiator";
-//        echo_spaces("Text message $count", $message);
+        $message = "The setting '$settingChanged' for $target_name (extension #: $extension) was changed from '$oldValue' to '$newValue' by: $initiator";
 
         $sms_data = [
             'from' => array('phoneNumber' => $fromNumber),
-            'to' => array(array('phoneNumber' => '+19029405827')),
+            'to' => array(array('phoneNumber' => $toNumber)),
             // activate this line when going live and comment out the line above
             // 'to' => array(array('phoneNumber' => $admin['phone_number'])),
             'text' => $message,
@@ -196,39 +200,45 @@ function send_admin_sms ($allAdmins, $audit_data, $accessToken) {
 
         $sms_response = curl_exec($sms_ch);
         curl_close($sms_ch);
+
     }
 }
 
-function send_team_message ($audit_data, $accessToken) {
+function send_team_message ($destination_array, $audit_data) {
 
-    // this chat id will have to be dynamic or come from the DB... still to be determined
-    $chatId = '138271293446';  // "Admin Audit Messages"
-    $endpoint = "https://platform.ringcentral.com/team-messaging/v1/chats/$chatId/posts";
+//    echo_spaces("destination array", $destination_array);
 
-    $settingChanged = $audit_data['Element Affected'];
-    $oldValue = $audit_data['old value'];
-    $newValue = $audit_data['new value'];
-    $initiator = $audit_data['initiator name'];
+    foreach ($destination_array as $value) {
+        $chatId = $value['tm_chat_id'];
+        $endpoint = "https://platform.ringcentral.com/team-messaging/v1/chats/$chatId/posts";
 
-    $message = "The setting '$settingChanged' was changed from '$oldValue' to '$newValue' by: $initiator";
+        $settingChanged = $audit_data['Element Affected'];
+        $oldValue = $audit_data['old value'];
+        $newValue = $audit_data['new value'];
+        $initiator = $audit_data['initiator name'];
+        $target_name = $audit_data['target name'];
+        $extension = $audit_data['target extensionId'];
 
-    $data = [
-        'text' => $message,
-    ];
+        $message = "The setting '$settingChanged' for $target_name (extension #: $extension) was changed from '$oldValue' to '$newValue' by: $initiator";
 
-    $headers = [
-        'Authorization: Bearer ' . $accessToken,
-        'Content-Type: application/json',
-    ];
+        $data = [
+            'text' => $message,
+        ];
 
-    $ch = curl_init($endpoint);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $headers = [
+            'Authorization: Bearer ' . $value['access'],
+            'Content-Type: application/json',
+        ];
 
-    $response = curl_exec($ch);
-    curl_close($ch);
+        $ch = curl_init($endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+    }
 }
 
 function refresh_tokens ($refreshToken, $client_id, $client_secret) {
@@ -293,13 +303,13 @@ function get_new_access_token ($refreshToken) {
     $newRefreshToken = $new_data['refresh_token'];
     // save back to DB
     $table = "clients";
-    $where_info = array ("account", "3058829020");
+    $where_info = array("account", "3058829020");
     $fields_data = $fields_data = array(
         "access" => $newAccessToken,
         "refresh" => $newRefreshToken,
     );
 
-    db_record_update($table, $fields_data, $where_info) ;
+    db_record_update($table, $fields_data, $where_info);
 
 //    echo_spaces("new access token", $newAccessToken, 2);
 

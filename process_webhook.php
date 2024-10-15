@@ -54,9 +54,8 @@ $timeStamp = $incoming_data->timestamp;
 // with the account id
 // [1] get records from the DB related to the triggering account in the event payload
 // [2] get the audit trail information
-
 // [3] send events from last 15 minutes to returned DB records
-// [5] post the same events to a TM group as designated by DB record
+// [4] post the same events to a TM group as designated by DB record
 
 /* === [1] get records from the DB related to the triggering account in the event payload */
 $table = "clients";
@@ -65,26 +64,33 @@ $where_info = array("account", $accountId);
 $db_result = db_record_select($table, $columns_data, $where_info);
 // all records connected to the triggering account
 
-foreach ($db_result as $row) {
-    $extensionId = $row['extension_id'];
-    $from_number = $row['from_number'];
-    $to_number = $row['to_number'];
-    $chatId = $row['team_chat_id'];
+//echo_spaces("DB result", $db_result);
+$destination_array = array();
 
-    $accessToken = $row['access'];
-    $refreshToken = $row['refresh'];
+foreach ($db_result as $key => $row) {
+    // build destination array
+    $destination_array[$key] = [
+        "access" => $row['access'],
+        "extension" => $row['extension_id'],
+        "from_number" => $row['from_number'],
+        "to_number" => $row['to_number'],
+        "tm_chat_id" => $row['team_chat_id'],
+    ];
 
-    /* === [2] get the audit trail information  === */
-    $audit_data = get_audit_data($accessToken, $timeStamp);
+    /* === [2] get the audit trail information from 5 minutes either side of the event date stamp  === */
+    $audit_data = get_audit_data($row['access'], $timeStamp);
 }
-
 
 
 //echo_spaces("audit array", $audit_data);
 
-// [4] send event from 5 minutes either side of the event date stamp to admins via SMS
-send_admin_sms($allAdmins, $audit_data, $accessToken);
+// [3] send event data to admins via SMS
+send_admin_sms($destination_array, $audit_data);
 
-// [5] post the event to a TM group
-send_team_message($audit_data, $accessToken);
+//echo_spaces("SMS Sent");
+
+// [4] post the event to a TM group
+send_team_message($destination_array, $audit_data);
+
+//echo_spaces("TM Sent");
 

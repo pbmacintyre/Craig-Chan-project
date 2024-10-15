@@ -1,10 +1,1 @@
-{"uuid":"1279045465713978799","event":"/restapi/v1.0/account/3058829020/directory/entries",
-"timestamp":"2024-09-27T14:23:02.302Z","subscriptionId":"02e55e37-8412-4691-9409-fe4ab7ea910f",
-"ownerId":"2412476021","body":{"contacts":[{"eventType":"Update",
-"oldEtag":"d4923ea2f37d960d24d41f4920464c5a16b3092e5d464e496415aaa32dca4f5a",
-"newEtag":"45ce16355c0a4f3c951b081421077ecddcaf54fe76245e207cc945768cd33538",
-"id":"2421611021","type":"User","status":"Enabled","firstName":"Peter",
-"lastName":"MacIntyre 2","department":"Security","email":"info@paladin-bs.com",
-"extensionNumber":"12004","account":{"id":"3058829020"},
-"phoneNumbers":[{"phoneNumber":"+19023320720","type":"VoiceFax",
-"formattedPhoneNumber":"+1 (902) 3320720","usageType":"DirectNumber","primary":true}]}]}}
+{"uuid":"6581571227577675163","event":"/restapi/v1.0/account/3058829020/directory/entries","timestamp":"2024-10-15T16:11:02.321Z","subscriptionId":"02e55e37-8412-4691-9409-fe4ab7ea910f","ownerId":"2412476021","body":{"contacts":[{"eventType":"Update","oldEtag":"7cf81c436d74b18fe3318e0a14754ea7c86b04cbc412b9136e76a5ab216e442d","newEtag":"2cc23a0bf874065f37b00c3ef645fdb62c7d05b6c2c95613b601f91dc357cb24","id":"2421611021","type":"User","status":"Enabled","firstName":"Peter","lastName":"MacIntyre 2","department":"Comedy","email":"info@paladin-bs.com","extensionNumber":"12004","account":{"id":"3058829020"},"phoneNumbers":[{"phoneNumber":"+19023320720","type":"VoiceFax","formattedPhoneNumber":"+1 (902) 3320720","usageType":"DirectNumber","primary":true}]}]}}

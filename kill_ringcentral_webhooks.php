@@ -10,11 +10,9 @@ require_once('includes/ringcentral-curl-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
 
 require('includes/vendor/autoload.php');
-
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/includes");
 $dotenv->load();
 
-show_errors();
 $client_id = $_ENV['RC_APP_CLIENT_ID'];
 $client_secret = $_ENV['RC_APP_CLIENT_SECRET'];
 
@@ -87,7 +85,7 @@ foreach ($subscriptions['records'] as $subscription) {
         $endpoint_del_url = "https://platform.ringcentral.com/restapi/v1.0/subscription/$subscription_id";
         $subscription_del_ch = curl_init();
 
-// Set cURL options
+        // Set cURL options
         curl_setopt_array($subscription_del_ch, [
             CURLOPT_URL => $endpoint_del_url,
             CURLOPT_CUSTOMREQUEST => "DELETE",
