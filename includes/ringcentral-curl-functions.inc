@@ -263,7 +263,10 @@ function refresh_tokens ($refreshToken, $client_id, $client_secret) {
 
     $new_response = curl_exec($new_ch);
     curl_close($new_ch);
+
     $refresh_data = json_decode($new_response, true);
+
+    $tokens = array();
     $tokens['accessToken'] = $refresh_data['access_token'];
     $tokens['refreshToken'] = $refresh_data['refresh_token'];
 
