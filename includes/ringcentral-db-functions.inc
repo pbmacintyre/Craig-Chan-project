@@ -63,6 +63,7 @@ function db_record_select ($table, $columns_data, $where_info = "", $condition =
     $table = "table_name";
     $columns_data = "*" => all fields OR
     $columns_data = array ("ringcentral_control_id", "webhook_token", );
+    $where_info [not sent as parameter means no where clause]   OR
     $where_info = array ("ringcentral_control_id", 1);  OR
     $where_info = array ("from_number", "+18084652471", "webhook_token", "5", );
     $condition = "AND" or "OR"

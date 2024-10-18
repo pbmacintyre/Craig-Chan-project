@@ -18,12 +18,13 @@ $client_secret = $_ENV['RC_APP_CLIENT_SECRET'];
 
 if (isset($_GET['code'])) {
 
+    $auth_code = htmlentities(strip_tags($_GET['code']));
     $redirect_uri = $_ENV['RC_REDIRECT_URL'];
     $endpoint = 'https://platform.ringcentral.com/restapi/oauth/token';
 
     $params = [
         'grant_type' => 'authorization_code',
-        'code' => htmlentities(strip_tags($_GET['code'])),
+        'code' => $auth_code,
         'redirect_uri' => $redirect_uri,
     ];
 
@@ -44,7 +45,7 @@ if (isset($_GET['code'])) {
 
     $data = json_decode($response, true);
 
-//    echo_spaces("authorization data", $data);
+    //echo_spaces("authorization data", $data);
 
     $accessToken    = $data['access_token'];
     $refreshToken   = $data['refresh_token'];

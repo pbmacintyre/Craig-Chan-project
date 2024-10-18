@@ -71,30 +71,6 @@ function ringcentral_oAuth_sdk () {
     return $sdk->platform();
 }
 
-/* ============================== */
-/* send out SMS to Shopify client */
-/* ============================== */
-function ringcentral_send_mobile ($payload, $shop_type) {
-
-    if ($shop_type == "shopify") {
-        $sdk = ringcentral_shopify_sdk($payload['JWT']);
-    } elseif ($shop_type == "BigComm") {
-        $sdk = ringcentral_bigcomm_sdk($payload['JWT']);
-    }
-
-    try {
-        $apiResponse = $sdk->platform()->post('/account/~/extension/~/sms',
-            array('from' => array('phoneNumber' => $payload["from_mobile"]),
-                'to' => array(array('phoneNumber' => substr($payload["to_mobile"], 2))),
-                'text' => $payload["message"]));
-    }
-    catch (\RingCentral\SDK\Http\APIException $e) {
-        // dump out the message object contents
-        error_log($e->getMessage());
-        var_dump($e->getMessage());
-    }
-}
-
 /* ======================================== */
 /* get from phone number from control table */
 /* it is stored in the user_name field      */
@@ -191,7 +167,6 @@ function ringcentral_verify_v3_recaptcha ($action) {
     }
 
 }
-
 function ringcentral_build_help ($field) {
     $image_source = 'images/question_mark.png';
 
@@ -205,28 +180,22 @@ function ringcentral_build_help ($field) {
     return "<img src='$image_source' title='" . $help_text . "' />";
 }
 
-function ringcentral_create_webhook_subscription () {
+function ringcentral_create_webhook_subscription ($accountId, $accessToken) {
     // create watching subscription webhook for audit events
     require('includes/vendor/autoload.php');
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->load();
 
     $webhook_url = $_ENV['RC_WEBHOOK_LISTENING_ADDRESS'];
-    $accountId = $_ENV['RC_APP_ACCOUNT_ID'];
 
-    /* get the access token */
-    $table = "clients";
-    $columns_data = array("access", "refresh");
-    $where_info = array("account", "3058829020");
-    $db_result = db_record_select($table, $columns_data, $where_info);
-    $accessToken = $db_result[0]['access'];
-
-    $endpoint_url = 'https://platform.ringcentral.com/restapi/v1.0/subscription';
+    $endpoint = 'https://platform.ringcentral.com/restapi/v1.0/subscription';
 
     // Create the data array (example for subscribing to message events)
     $data = [
         "eventFilters" => [
-            "/restapi/v1.0/account/~/directory/entries",
+            "/restapi/v1.0/account/$accountId/directory/entries",
+            // TODO: need to get full lis of events to listen for from here:
+            // https://developers.ringcentral.com/guide/notifications/event-filters
             // "/restapi/v1.0/account/~/extension/~/message-store",
             ],
         "deliveryMode" => [
@@ -234,7 +203,7 @@ function ringcentral_create_webhook_subscription () {
             "address" => $webhook_url // WEBHOOK_LISTENING_ADDRESS URL
         ],
     ];
-    $ch = curl_init($endpoint_url);
+    $ch = curl_init($endpoint);
 
     // Set the cURL options
     curl_setopt($ch, CURLOPT_POST, true); // Set the request method to POST
@@ -250,73 +219,7 @@ function ringcentral_create_webhook_subscription () {
     $response = curl_exec($ch);
     $responseData = json_decode($response, true);
 
-//    echo_spaces("response object", $responseData);
-
     return $responseData['id'] ;
-}
-
-function ringcentral_kill_webhook_subscription ($existing_rc_jwt_key, $shop_type) {
-    // coming in decrypted
-    if ($shop_type == "shopify_shops") {
-        $sdk = ringcentral_shopify_sdk($existing_rc_jwt_key);
-    } elseif ($shop_type == "bigcomm_shops") {
-        $sdk = ringcentral_bigcomm_sdk($existing_rc_jwt_key);
-    }
-
-    $table = $shop_type;
-    $columns_data = array("rc_webhook_token");
-    $where_info = array("jwt_code", encryptData($existing_rc_jwt_key));
-    $db_result = db_record_select($table, $columns_data, $where_info);
-
-    $webhook_token = $db_result[0]['rc_webhook_token'];
-    $sdk->platform()->delete("/subscription/{$webhook_token}");
-}
-
-//// setup Mail Gun class for use
-//require_once('includes/vendor/autoload.php');
-//use Mailgun\Mailgun;
-
-function send_mailgun_email ($email, $subject, $body) {
-
-    $table = "ringcentral_control";
-    $columns_data = array("mailgun_key");
-    $where_info = array("ringcentral_control_id", 1);
-    $db_result = db_record_select($table, $columns_data, $where_info);
-
-    $mailgun_key = $db_result[0]['mailgun_key'];
-
-    $mgClient = Mailgun::create($mailgun_key);
-
-    try {
-        $mgClient->messages()->send('ecommerce.labs.gamechanging.dev' , [
-            "from"      => 'ecommerce labs<admin@ecommerce.labs.gamechanging.dev>',
-            "to"        => "$email",
-            "subject"   => "$subject",
-            "text"      => "$body",
-            'html'      => "<html>$body</html>",
-        ]);
-        $result = true ;
-    } catch (Exception $e){
-        echo_spaces("Catch exception Message", $e->getMessage(), 2);
-        $result = false ;
-    }
-    return $result;
-}
-// =====================================================
-// ======= GET / POST Functions are below ==============
-// =====================================================
-function callAccountRequest ($endpoint, $params) {
-    global $platform;
-    try {
-        $resp = $platform->get($endpoint, $params);
-        echo_spaces("Object detail", $resp->json()->id);
-//        echo_spaces("Object detail", $resp->json()->serviceInfo->brand);
-        echo_spaces("Object", $resp->json());
-//        echo $resp->text();
-    }
-    catch (\RingCentral\SDK\Http\ApiException $e) {
-        print 'Expected HTTP Error: ' . $e->getMessage() . PHP_EOL;
-    }
 }
 
 function callPostRequest ($platform, $endpoint, $params=null) {
@@ -420,10 +323,4 @@ function post_tm_chat ($rcsdk, $chatId, $team_chat) {
         $result = false;
     }
     return $result;
-}
-function ringcentral_valid_mobile ($mobile) {
-    // only take the digits, strip out brackets and dashes if they are there
-    $digits_only = preg_replace('/[^0-9]/', '', $mobile);
-
-    return $digits_only ;
 }

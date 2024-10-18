@@ -175,13 +175,14 @@ function send_admin_sms ($destination_array, $audit_data) {
         ];
 
         $settingChanged = $audit_data['Element Affected'];
+        $eventTime = $audit_data['eventTime'];
         $oldValue = $audit_data['old value'];
         $newValue = $audit_data['new value'];
         $initiator = $audit_data['initiator name'];
         $target_name = $audit_data['target name'];
         $extension = $audit_data['target extensionId'];
 
-        $message = "The setting '$settingChanged' for $target_name (extension #: $extension) was changed from '$oldValue' to '$newValue' by: $initiator";
+        $message = "$eventTime: The setting '$settingChanged' for $target_name (extension #: $extension) was changed from '$oldValue' to '$newValue' by: $initiator";
 
         $sms_data = [
             'from' => array('phoneNumber' => $fromNumber),
@@ -213,13 +214,14 @@ function send_team_message ($destination_array, $audit_data) {
         $endpoint = "https://platform.ringcentral.com/team-messaging/v1/chats/$chatId/posts";
 
         $settingChanged = $audit_data['Element Affected'];
+        $eventTime = $audit_data['eventTime'];
         $oldValue = $audit_data['old value'];
         $newValue = $audit_data['new value'];
         $initiator = $audit_data['initiator name'];
         $target_name = $audit_data['target name'];
         $extension = $audit_data['target extensionId'];
 
-        $message = "The setting '$settingChanged' for $target_name (extension #: $extension) was changed from '$oldValue' to '$newValue' by: $initiator";
+        $message = "$eventTime: The setting '$settingChanged' for $target_name (extension #: $extension) was changed from '$oldValue' to '$newValue' by: $initiator";
 
         $data = [
             'text' => $message,
@@ -406,5 +408,38 @@ function list_tm_teams ($accessToken) {
     // Close the cURL session
     curl_close($tm_ch);
 
-    return $data;
+    $groupChats = array();
+    if ($data['errors']) {
+        $groupChats = "" ;
+    } else {
+        $groupChats = $data;
+    }
+    return $groupChats;
+}
+
+function list_extension_sms_enabled_numbers ($accessToken, $accountId, $extensionId) {
+    $endpoint = "https://platform.ringcentral.com/restapi/v1.0/account/$accountId/extension/$extensionId/phone-number";
+
+    $headers = [
+        'Authorization: Bearer ' . $accessToken,
+        "Content-Type: application/json",
+    ];
+
+    $sms_ch = curl_init($endpoint);
+    curl_setopt($sms_ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($sms_ch, CURLOPT_HTTPHEADER, $headers);
+
+    $resp = curl_exec($sms_ch);
+    $data = json_decode($resp, true);
+    // Close the cURL session
+    curl_close($sms_ch);
+    $numbers = array();
+    foreach ($data['records'] as $key => $record) {
+        foreach ($record['features'] as $acctType) {
+            if ($acctType == 'SmsSender') {
+                $numbers[$key]["phoneNumber"] = $record['phoneNumber'];
+            }
+        }
+    }
+    return $numbers;
 }

@@ -33,4 +33,5 @@ foreach ($db_result as $row) {
 }
 
 $message = "CRON runs every 30 minutes";
+echo_spaces("tokens refreshed");
 //send_basic_sms ($clients['accessToken'], $message);

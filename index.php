@@ -14,20 +14,6 @@ show_errors();
 page_header(1);  // set back to 1 when recaptchas are set in the .ENV file
 
 function show_form ($message, $label = "", $print_again = false) { ?>
-    <script>
-        <?php
-//                $table = "ringcentral_control";
-//                $columns_data = array("grc_site_key");
-//                $where_info = array("ringcentral_control_id", 1);
-//                $db_result = db_record_select($table, $columns_data, $where_info);
-//
-//                $site_key = $db_result[0]['grc_site_key'];  ?>
-//                grecaptcha.ready(function () {
-//                    grecaptcha.execute('<?php //= $site_key ?>//', {action: 'submit'}).then(function (token) {
-//                        document.getElementById('g-recaptcha-response').value = token;
-//                    });
-//                });
-    </script>
 
     <form action="" method="post">
         <input type="hidden" name="form_token" value="<?php echo generate_form_token(); ?>">
@@ -48,7 +34,7 @@ function show_form ($message, $label = "", $print_again = false) { ?>
             </tr>
             <tr class="CustomTable">
                 <td class="CustomTableFullCol">
-                    <!--                    <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">-->
+                    <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
                 </td>
             </tr>
             <tr class="CustomTable">

@@ -10,12 +10,14 @@ require_once('includes/ringcentral-db-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
 require_once('includes/ringcentral-curl-functions.inc');
 
-show_errors();
+//show_errors();
 
-page_header(0);  // set back to 1 when recaptchas are set in the DB
+page_header();
 
 function show_form ($message, $auth, $label = "", $print_again = false, $color = "#008EC2") {
     $accessToken = $_SESSION['access_token'];
+    $accountId = $_SESSION['account_id'];
+    $extensionId = $_SESSION['extension_id'];
     ?>
     <form action="" method="post">
         <table class="CustomTable">
@@ -33,13 +35,15 @@ function show_form ($message, $auth, $label = "", $print_again = false, $color =
                     <hr>
                 </td>
             </tr>
-            <?php if ($auth == 1) { ?>
+            <?php if ($auth == 1) {
+                $response = list_extension_sms_enabled_numbers($accessToken, $accountId, $extensionId);
+                ?>
                 <tr>
-                    <td >
-
+                    <td>
+                        <!--  blank column for formatting -->
                     </td>
-                    <td >
-                        <?php echo_plain_text("Phone number formats: +19991234567","", "small"); ?>
+                    <td>
+                        <?php echo_plain_text("Phone number formats: +19991234567", "", "small"); ?>
                     </td>
                 </tr>
                 <tr>
@@ -49,11 +53,18 @@ function show_form ($message, $auth, $label = "", $print_again = false, $color =
                         <?php required_field(); ?>
                     </td>
                     <td class="addform_right_col">
-                        <input type="text" name="from_number" value="<?php
-                        if ($print_again) {
-                            echo strip_tags($_POST['from_number']);
-                        }
-                        ?>">
+                        <?php
+                        if (!$response) {
+                            echo "<span style=\"color: red; \">No SMS enabled phone numbers were found for that account</span>";
+                        } else { ?>
+                            <select name="from_number">
+                                <option selected value="-1">Choose a From Number</option>
+                                <?php
+                                foreach ($response as $record) { ?>
+                                    <option value="<?php echo $record['phoneNumber']; ?>"><?php echo $record['phoneNumber']; ?></option>
+                                <?php } ?>
+                            </select>
+                        <?php } ?>
                     </td>
                 </tr>
                 <tr>
@@ -69,10 +80,7 @@ function show_form ($message, $auth, $label = "", $print_again = false, $color =
                         ?>">
                     </td>
                 </tr>
-                <?php
-                $response = list_tm_teams($accessToken);
-                //        echo_spaces("Chat Groups", $response);
-                ?>
+                <?php $response = list_tm_teams($accessToken); ?>
                 <tr>
                     <td class="addform_left_col">
                         <p style='display: inline; <?php if ($label == "chat_id") echo "color:red"; ?>'>Available Group
@@ -81,9 +89,8 @@ function show_form ($message, $auth, $label = "", $print_again = false, $color =
                     </td>
                     <td class="addform_right_col">
                         <?php
-
                         if (!$response) {
-                            echo "<font color='red'>No Team Chats are currently available</font>";
+                            echo "<span style=\"color: red; \">No Team Chats are currently available</span>";
                         } else { ?>
                             <select name="chat_id">
                                 <option selected value="-1">Choose Team to Post Chat into</option>
@@ -115,42 +122,33 @@ function check_form ($auth) {
     $print_again = false;
     $label = "";
     $message = "";
-    $accessToken = $_SESSION['access_token'];
+
+    $from_number = htmlspecialchars(strip_tags($_POST['from_number']));
+    $to_number = htmlspecialchars(strip_tags($_POST['to_number']));
+    $chat_id = htmlspecialchars(strip_tags($_POST['chat_id']));
+
     // check the formatting of the mobile # == +19991234567
     $pattern = '/^\+\d{11}$/'; // Assumes 11 digits after the '+'
 
-    $from_number = strip_tags($_POST['from_number']);
-    $to_number = strip_tags($_POST['to_number']);
-    $chat_id = strip_tags($_POST['chat_id']);
-
-    if ($from_number == "") {
-        $print_again = true;
-        $label = "from_number";
-        $message = "Please provide a valid mobile number to send out messages.";
-    }
-    if (!preg_match($pattern, $from_number)) {
-        $print_again = true;
-        $label = "from_number";
-        $message = "The mobile FROM number is not in the correct format of +19991234567";
-    }
-    if ($to_number == "") {
-        $print_again = true;
-        $label = "to_number";
-        $message = "Please provide a valid mobile number to receive messages.";
-    }
-    if (!preg_match($pattern, $to_number)) {
+    if ($from_number != "-1" && !preg_match($pattern, $to_number)) {
         $print_again = true;
         $label = "to_number";
         $message = "The mobile TO number is not in the correct format of +19991234567";
     }
-    if ($chat_id == "-1") {
+    if ($from_number != "-1" && $to_number == "") {
         $print_again = true;
-        $label = "chat_id";
-        $message = "Please select a Group Chat to post to.";
+        $label = "to_number";
+        $message = "Please provide a valid mobile number combination to receive admin messages.";
+    }
+    if ($from_number == "-1" && $chat_id == "-1") {
+        $print_again = true;
+        $label = "";
+        $message = "Please provide either a phone number combination or a Group Chat to receive admin messages.";
     }
     // end edit checks
     if ($print_again == true) {
         $color = "red";
+//        $message .= " From: " . $from_number . " chat id: " .  $chat_id;
         show_form($message, $auth, $label, $print_again, $color);
     } else {
         // update the record with validated information
@@ -159,14 +157,17 @@ function check_form ($auth) {
         $extensionId = $_SESSION['extension_id'];
 
         $table = "clients";
-        $where_info = array ("account", $accountId, "extension_id", $extensionId, );
-        $condition = "AND" ;
+        $where_info = array("account", $accountId, "extension_id", $extensionId,);
+        $condition = "AND";
         $fields_data = array(
             "from_number" => $from_number,
             "to_number" => $to_number,
             "team_chat_id" => $chat_id,
         );
         db_record_update($table, $fields_data, $where_info, $condition);
+
+        // now create a webhook for the account that was just authorized.
+        ringcentral_create_webhook_subscription($accountId, $_SESSION['access_token']);
 
         header("Location: authorization_complete.php");
 

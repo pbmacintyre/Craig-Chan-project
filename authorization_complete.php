@@ -12,7 +12,7 @@ require_once('includes/ringcentral-curl-functions.inc');
 
 show_errors();
 
-page_header(0);  // set back to 1 when recaptchas are set in the DB
+page_header();  // set back to 1 when recaptchas are set in the DB
 
 function show_form ($message) {  ?>
     <form action="" method="post">
@@ -43,7 +43,7 @@ function show_form ($message) {  ?>
 /* ============= */
 /*  --- MAIN --- */
 /* ============= */
-$message = "Your account has been fully authorized. You will be notified at the provided mobile numbers when admin level editing events occur on your account";
+$message = "Your account has been fully authorized. You will be notified at the provided contact point when admin level editing events occur on your account";
 show_form($message);
 
 ob_end_flush();
