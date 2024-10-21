@@ -166,8 +166,17 @@ function check_form ($auth) {
         );
         db_record_update($table, $fields_data, $where_info, $condition);
 
-        // now create a webhook for the account that was just authorized.
-        ringcentral_create_webhook_subscription($accountId, $_SESSION['access_token']);
+        $table = "clients";
+        $columns_data = array("client_id");
+        $where_info = array("account", $accountId);
+        $db_result = db_record_select($table, $columns_data, $where_info);
+
+//        if (!$db_result) {
+        //TODO: figure out how to not launch more than one webhook per account
+            // now create a webhook for the account that was just authorized if it does not exist already.
+            ringcentral_create_admin_webhook_subscription($accountId, $_SESSION['access_token']);
+            ringcentral_create_sms_webhook_subscription($accountId, $extensionId, $_SESSION['access_token']);
+//        }
 
         header("Location: authorization_complete.php");
 

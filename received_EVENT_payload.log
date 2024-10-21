@@ -1,1 +1,8 @@
-{"uuid":"6581571227577675163","event":"/restapi/v1.0/account/3058829020/directory/entries","timestamp":"2024-10-15T16:11:02.321Z","subscriptionId":"02e55e37-8412-4691-9409-fe4ab7ea910f","ownerId":"2412476021","body":{"contacts":[{"eventType":"Update","oldEtag":"7cf81c436d74b18fe3318e0a14754ea7c86b04cbc412b9136e76a5ab216e442d","newEtag":"2cc23a0bf874065f37b00c3ef645fdb62c7d05b6c2c95613b601f91dc357cb24","id":"2421611021","type":"User","status":"Enabled","firstName":"Peter","lastName":"MacIntyre 2","department":"Comedy","email":"info@paladin-bs.com","extensionNumber":"12004","account":{"id":"3058829020"},"phoneNumbers":[{"phoneNumber":"+19023320720","type":"VoiceFax","formattedPhoneNumber":"+1 (902) 3320720","usageType":"DirectNumber","primary":true}]}]}}
+{"uuid":"3281921446538843933","event":"/restapi/v1.0/account/3058829020/directory/entries","timestamp":"2024-10-21T15:10:53.640Z",
+"subscriptionId":"db312786-e752-4bb2-8c6a-89ab85d03b88","ownerId":"2412476021","body":{"contacts":[
+{"eventType":"Update","oldEtag":"cd7263343ecf3a5db6d296c8a1860a312637c7442768c77d46b9a0c0327dc9c5",
+"newEtag":"5013f1ecbbcd6170f6256ac0fe53aec8f2ceb962871bae19a8689fa0a696455e","id":"2421611021",
+"type":"User","status":"Enabled","firstName":"Peter","lastName":"MacIntyre 2",
+"department":"Mathematics","email":"info@paladin-bs.com","extensionNumber":"12004","account":{"id":"3058829020"},
+"phoneNumbers":[{"phoneNumber":"+19023320720","type":"VoiceFax","formattedPhoneNumber":"+1 (902) 3320720",
+"usageType":"DirectNumber","primary":true}]}]}}

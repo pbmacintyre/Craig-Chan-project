@@ -48,12 +48,12 @@ function get_audit_data ($accessToken, $timeStamp) {
 
     $data = json_decode($response, true);
 
-    //echo_spaces("data object", $data);
+    //echo_spaces("Audit data object", $data);
     $audit_data = array();
 
-    foreach ($data['records'] as $value)
+    foreach ($data['records'] as $key => $value)
         // build an array of events that are applicable to sending to Admins
-        $audit_data = [
+        $audit_data[$key] = [
             "eventType" => $value['eventType'],
             "eventTime" => $value['eventTime'],
             // "actionId" => $value['actionId'],
@@ -164,8 +164,6 @@ function send_admin_sms ($destination_array, $audit_data) {
 
     $endpoint = 'https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/sms';
 
-    // echo_spaces("destination array", $destination_array);
-
     foreach ($destination_array as $value) {
         $fromNumber = $value['from_number'];
         $toNumber = $value['to_number'];
@@ -173,74 +171,82 @@ function send_admin_sms ($destination_array, $audit_data) {
             'Authorization: Bearer ' . $value['access'],
             "Content-Type: application/json"
         ];
+        foreach ($audit_data as $value2) {
+            $settingChanged = $value2['Element Affected'];
 
-        $settingChanged = $audit_data['Element Affected'];
-        $eventTime = $audit_data['eventTime'];
-        $oldValue = $audit_data['old value'];
-        $newValue = $audit_data['new value'];
-        $initiator = $audit_data['initiator name'];
-        $target_name = $audit_data['target name'];
-        $extension = $audit_data['target extensionId'];
+            $dateTime = new DateTime($value2['eventTime']);
+            $dateTime->setTimezone(new DateTimeZone("America/Halifax")); // AST is UTC-4
+            $eventTime = $dateTime->format('M j, Y => g:i a');
 
-        $message = "$eventTime: The setting '$settingChanged' for $target_name (extension #: $extension) was changed from '$oldValue' to '$newValue' by: $initiator";
+            $oldValue = $value2['old value'];
+            $newValue = $value2['new value'];
+            $initiator = $value2['initiator name'];
+            $target_name = $value2['target name'];
+            $extension = $value2['target extensionId'];
 
-        $sms_data = [
-            'from' => array('phoneNumber' => $fromNumber),
-            'to' => array(array('phoneNumber' => $toNumber)),
-            // activate this line when going live and comment out the line above
-            // 'to' => array(array('phoneNumber' => $admin['phone_number'])),
-            'text' => $message,
-        ];
+            $message = "$eventTime: The setting '$settingChanged' for $target_name (extension #: $extension) was changed from '$oldValue' to '$newValue' by: $initiator";
 
-        $sms_ch = curl_init();
-        curl_setopt($sms_ch, CURLOPT_URL, $endpoint);
-        curl_setopt($sms_ch, CURLOPT_POST, true);
-        curl_setopt($sms_ch, CURLOPT_POSTFIELDS, json_encode($sms_data));
-        curl_setopt($sms_ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($sms_ch, CURLOPT_HTTPHEADER, $sms_headers);
+            $sms_data = [
+                'from' => array('phoneNumber' => $fromNumber),
+                'to' => array(array('phoneNumber' => $toNumber)),
+                'text' => $message,
+            ];
 
-        $sms_response = curl_exec($sms_ch);
-        curl_close($sms_ch);
+            $sms_ch = curl_init();
+            curl_setopt($sms_ch, CURLOPT_URL, $endpoint);
+            curl_setopt($sms_ch, CURLOPT_POST, true);
+            curl_setopt($sms_ch, CURLOPT_POSTFIELDS, json_encode($sms_data));
+            curl_setopt($sms_ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($sms_ch, CURLOPT_HTTPHEADER, $sms_headers);
+
+            $sms_response = curl_exec($sms_ch);
+            curl_close($sms_ch);
+        }
 
     }
 }
 
 function send_team_message ($destination_array, $audit_data) {
 
-//    echo_spaces("destination array", $destination_array);
-
     foreach ($destination_array as $value) {
         $chatId = $value['tm_chat_id'];
         $endpoint = "https://platform.ringcentral.com/team-messaging/v1/chats/$chatId/posts";
 
-        $settingChanged = $audit_data['Element Affected'];
-        $eventTime = $audit_data['eventTime'];
-        $oldValue = $audit_data['old value'];
-        $newValue = $audit_data['new value'];
-        $initiator = $audit_data['initiator name'];
-        $target_name = $audit_data['target name'];
-        $extension = $audit_data['target extensionId'];
+        foreach ($audit_data as $value2) {
+            $settingChanged = $value2['Element Affected'];
 
-        $message = "$eventTime: The setting '$settingChanged' for $target_name (extension #: $extension) was changed from '$oldValue' to '$newValue' by: $initiator";
+            $dateTime = new DateTime($value2['eventTime']);
+            $dateTime->setTimezone(new DateTimeZone("America/Halifax")); // AST is UTC-4
+            $eventTime = $dateTime->format('M j, Y => g:i a');
 
-        $data = [
-            'text' => $message,
-        ];
+            $oldValue = $value2['old value'];
+            $newValue = $value2['new value'];
+            $initiator = $value2['initiator name'];
+            $target_name = $value2['target name'];
+            $extension = $value2['target extensionId'];
 
-        $headers = [
-            'Authorization: Bearer ' . $value['access'],
-            'Content-Type: application/json',
-        ];
+            $message = "$eventTime: The setting '$settingChanged' for $target_name (extension #: $extension) was changed from '$oldValue' to '$newValue' by: $initiator";
 
-        $ch = curl_init($endpoint);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $data = [
+                'text' => $message,
+            ];
 
-        $response = curl_exec($ch);
-        curl_close($ch);
+            $headers = [
+                'Authorization: Bearer ' . $value['access'],
+                'Content-Type: application/json',
+            ];
+
+            $ch = curl_init($endpoint);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+            $response = curl_exec($ch);
+            curl_close($ch);
+        }
     }
+
 }
 
 function refresh_tokens ($refreshToken, $client_id, $client_secret) {
@@ -410,7 +416,7 @@ function list_tm_teams ($accessToken) {
 
     $groupChats = array();
     if ($data['errors']) {
-        $groupChats = "" ;
+        $groupChats = "";
     } else {
         $groupChats = $data;
     }

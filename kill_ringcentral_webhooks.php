@@ -72,7 +72,11 @@ foreach ($db_result as $row) {
         $subscription_id = $subscription['id'];
         // echo_spaces("Individual Subscription array", $subscription);
         echo_spaces("Subscription ID", $subscription_id);
-        echo_spaces("Creation Time", $subscription['creationTime']);
+
+        $dateTime = new DateTime($subscription['creationTime'], new DateTimeZone('UTC'));
+        $dateTime->setTimezone(new DateTimeZone("America/Halifax")); // AST is UTC-4
+
+        echo_spaces("Creation Time => " . $dateTime->format('M j, Y => g:i a'));
         // do a for each next line if needed.
         foreach ($subscription['eventFilters'] as $key => $filter) {
             echo_spaces("Event Filter URI $key", $subscription['eventFilters'][$key]);
@@ -80,7 +84,7 @@ foreach ($db_result as $row) {
         echo_spaces("Webhook URI", $subscription['deliveryMode']['address']);
         echo_spaces("Webhook transport type", $subscription['deliveryMode']['transportType'], 2);
 
-        if ($subscription_id == "f418e720-e05b-438d-92d9-aa84dfd9d75c") {
+        if ($subscription_id == "db312786-e752-4bb2-8c6a-89ab85d03b88") {
             $endpoint_del_url = "https://platform.ringcentral.com/restapi/v1.0/subscription/$subscription_id";
             $subscription_del_ch = curl_init();
 

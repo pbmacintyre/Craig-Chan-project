@@ -5,9 +5,9 @@
 /* Generic functions */
 /* ================= */
 
-use RingCentral\SDK\Http\HttpException;
-use RingCentral\SDK\Http\ApiResponse;
-use RingCentral\SDK\SDK;
+//use RingCentral\SDK\Http\HttpException;
+//use RingCentral\SDK\Http\ApiResponse;
+//use RingCentral\SDK\SDK;
 
 function prod_test() {
     return 0 ;  // 1 for production & 0 for test environment
@@ -21,95 +21,6 @@ function app_name () {
 function app_version () {
     echo_plain_text("Version 0.1", "grey", "small");
 }
-/* ================== */
-/* Get RingCental SDK */
-/* ================== */
-function ringcentral_sdk () {
-    // Include Libraries
-    require('includes/vendor/autoload.php');
-
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-    $dotenv->load();
-
-    $jwt_key = $_ENV['RC_USER_JWT'] ;
-
-    $sdk = new RingCentral\SDK\SDK(
-        $_ENV['RC_APP_CLIENT_ID'],
-        $_ENV['RC_APP_CLIENT_SECRET'],
-        $_ENV['RC_SERVER_URL']);
-
-    $platform = $sdk->platform();
-
-    // Login via API
-    if (!$sdk->platform()->loggedIn()) {
-        try {
-            $platform->login(["jwt" => $jwt_key]);
-        }
-        catch (\RingCentral\SDK\Http\ApiException $e) {
-            $sdk = 0;
-            // exit("<br/><br/>Unable to authenticate to platform. Check your RingCentral credentials. <br/><br/>") ;
-        }
-    }
-    $controller = array('SDK' => $sdk, 'platform' => $platform);
-    return $controller;
-}
-/* ======================== */
-/* Get RingCental oAuth SDK */
-/* ======================== */
-function ringcentral_oAuth_sdk () {
-    // Include Libraries
-    require_once('includes/vendor/autoload.php');
-
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-    $dotenv->load();
-
-    $sdk = new RingCentral\SDK\SDK(
-        $_ENV['RC_APP_CLIENT_ID'],
-        $_ENV['RC_APP_CLIENT_SECRET'],
-        $_ENV['RC_SERVER_URL']);
-
-    return $sdk->platform();
-}
-
-/* ======================================== */
-/* get from phone number from control table */
-/* it is stored in the user_name field      */
-/* ======================================== */
-function ringcentral_get_from_phone () {
-    $table = "ringcentral_control";
-    $columns_data = array("from_number");
-    $where_info = array("ringcentral_control_id", 1);
-    $db_result = db_record_select($table, $columns_data, $where_info);
-
-    return $db_result[0]["from_number"];
-}
-
-function ringcentral_gen_and_send_six_digit_code ($to) {
-
-    $six_digit_code = rand(100000, 999999);
-    $_SESSION['six_digit_code'] = $six_digit_code;
-    $_SESSION['last_four'] = substr($to, -4);
-
-    $message = "You or another person has requested to use this number for two-factor authentication. 
-        To authenticate 2FA please enter the following code on the validation page: $six_digit_code";
-
-    // connect to SDK with credentials in the DB
-    $sdk = ringcentral_sdk();
-    $from = ringcentral_get_from_phone();
-
-    try {
-        $apiResponse = $sdk->platform()->post('/account/~/extension/~/sms',
-            array('from' => array('phoneNumber' => $from),
-                'to' => array(array('phoneNumber' => $to)),
-                'text' => $message),
-        );
-    }
-    catch (\RingCentral\SDK\Http\ApiException $e) {
-        // craft a friendly message here.
-        $return_message = "There was an error sending the validation code, Please try again later <br/>" . $e;
-    }
-}
-
 /* =================== */
 /* Build ReCaptcha top */
 /* =================== */
@@ -180,7 +91,7 @@ function ringcentral_build_help ($field) {
     return "<img src='$image_source' title='" . $help_text . "' />";
 }
 
-function ringcentral_create_webhook_subscription ($accountId, $accessToken) {
+function ringcentral_create_admin_webhook_subscription ($accountId, $accessToken) {
     // create watching subscription webhook for audit events
     require('includes/vendor/autoload.php');
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -193,11 +104,52 @@ function ringcentral_create_webhook_subscription ($accountId, $accessToken) {
     // Create the data array (example for subscribing to message events)
     $data = [
         "eventFilters" => [
+            // listening for some admin edits
             "/restapi/v1.0/account/$accountId/directory/entries",
             // TODO: need to get full lis of events to listen for from here:
             // https://developers.ringcentral.com/guide/notifications/event-filters
             // "/restapi/v1.0/account/~/extension/~/message-store",
             ],
+        "deliveryMode" => [
+            "transportType" => "WebHook",
+            "address" => $webhook_url // WEBHOOK_LISTENING_ADDRESS URL
+        ],
+    ];
+    $ch = curl_init($endpoint);
+
+    // Set the cURL options
+    curl_setopt($ch, CURLOPT_POST, true); // Set the request method to POST
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Bearer ' . $accessToken, // Set the Authorization header with the access token
+        'Content-Type: application/json', // Specify the content type as JSON
+        'accept: application/json',
+    ]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data)); // Attach the data as JSON
+
+    // Execute the cURL request and get the response
+    $response = curl_exec($ch);
+    $responseData = json_decode($response, true);
+
+    return $responseData['id'] ;
+}
+function ringcentral_create_sms_webhook_subscription ($accountId, $extensionId, $accessToken) {
+    // create watching subscription webhook for audit events
+    require('includes/vendor/autoload.php');
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+
+    $webhook_url = $_ENV['RC_WEBHOOK_LISTENING_ADDRESS'];
+
+    $endpoint = 'https://platform.ringcentral.com/restapi/v1.0/subscription';
+
+    // Create the data array (example for subscribing to message events)
+    $data = [
+        "eventFilters" => [
+            // listening for SMS opt-outs
+            "/restapi/v1.0/account/$accountId/extension/$extensionId/message-store/instant?type=SMS",
+        ],
+        "expiresIn" => "315360000",
         "deliveryMode" => [
             "transportType" => "WebHook",
             "address" => $webhook_url // WEBHOOK_LISTENING_ADDRESS URL
