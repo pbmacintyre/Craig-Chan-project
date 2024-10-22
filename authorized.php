@@ -152,7 +152,6 @@ function check_form ($auth) {
         show_form($message, $auth, $label, $print_again, $color);
     } else {
         // update the record with validated information
-//        echo_spaces("Ready to save data");
         $accountId = $_SESSION['account_id'];
         $extensionId = $_SESSION['extension_id'];
 
@@ -166,17 +165,22 @@ function check_form ($auth) {
         );
         db_record_update($table, $fields_data, $where_info, $condition);
 
-        $table = "clients";
-        $columns_data = array("client_id");
-        $where_info = array("account", $accountId);
-        $db_result = db_record_select($table, $columns_data, $where_info);
+        // create admin webhook, there may already be an admin webhook so let the function test that
+        ringcentral_create_admin_webhook_subscription($accountId, $_SESSION['access_token']);
+//         echo_spaces( "Admin webhook id", $admin_webhook_id);
 
-//        if (!$db_result) {
-        //TODO: figure out how to not launch more than one webhook per account
-            // now create a webhook for the account that was just authorized if it does not exist already.
-            ringcentral_create_admin_webhook_subscription($accountId, $_SESSION['access_token']);
-            ringcentral_create_sms_webhook_subscription($accountId, $extensionId, $_SESSION['access_token']);
-//        }
+        // if from & to number exist create sms webhook,
+        if ($from_number && $to_number) {
+            $sms_webhook_id = ringcentral_create_sms_webhook_subscription($accountId, $extensionId, $_SESSION['access_token']);
+        } else {
+            $sms_webhook_id = 0;
+        }
+
+        // store new webhook ids
+        $fields_data = array(
+            "sms_webhook" => $sms_webhook_id,
+        );
+        db_record_update($table, $fields_data, $where_info, $condition);
 
         header("Location: authorization_complete.php");
 

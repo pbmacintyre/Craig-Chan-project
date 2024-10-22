@@ -184,7 +184,10 @@ function send_admin_sms ($destination_array, $audit_data) {
             $target_name = $value2['target name'];
             $extension = $value2['target extensionId'];
 
-            $message = "$eventTime: The setting '$settingChanged' for $target_name (extension #: $extension) was changed from '$oldValue' to '$newValue' by: $initiator";
+            $message = "$eventTime: The setting '$settingChanged' for $target_name (extension #: $extension) was changed 
+            from '$oldValue' to '$newValue' by: $initiator. ";
+
+            $message .= "To opt out at any time, simply reply with STOP.";
 
             $sms_data = [
                 'from' => array('phoneNumber' => $fromNumber),
@@ -327,33 +330,6 @@ function get_new_access_token ($refreshToken) {
     return $newAccessToken;
 }
 
-function send_basic_sms ($accessToken, $message) {
-
-    $endpoint = 'https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/sms';
-
-    $fromNumber = ringcentral_get_from_phone();
-    $sms_data = [
-        'from' => array('phoneNumber' => $fromNumber),
-        'to' => array(array('phoneNumber' => '+19029405827')),
-        'text' => $message,
-    ];
-
-    $sms_headers = [
-        'Authorization: Bearer ' . $accessToken,
-        "Content-Type: application/json"
-    ];
-
-    $sms_ch = curl_init();
-    curl_setopt($sms_ch, CURLOPT_URL, $endpoint);
-    curl_setopt($sms_ch, CURLOPT_POST, true);
-    curl_setopt($sms_ch, CURLOPT_POSTFIELDS, json_encode($sms_data));
-    curl_setopt($sms_ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($sms_ch, CURLOPT_HTTPHEADER, $sms_headers);
-
-    curl_exec($sms_ch);
-    curl_close($sms_ch);
-}
-
 function is_admin ($accessToken, $accountId, $extensionId) {
     $admin = false;
     try {
@@ -448,4 +424,40 @@ function list_extension_sms_enabled_numbers ($accessToken, $accountId, $extensio
         }
     }
     return $numbers;
+}
+
+function send_stop_sms ($fromNumber, $toNumber) {
+
+    $table = "clients";
+    $columns_data = array("access");
+    $where_info = array("from_number", $fromNumber, "to_number", $toNumber,);
+    $condition = "AND";
+    $db_result = db_record_select($table, $columns_data, $where_info, $condition);
+    $accessToken = $db_result[0]['access'];
+
+    $endpoint = 'https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/sms';
+
+    $sms_headers = [
+        'Authorization: Bearer ' . $accessToken,
+        "Content-Type: application/json"
+    ];
+
+    $message = "PBM : You have been removed from the SMS distribution list";
+
+    $sms_data = [
+        'from' => array('phoneNumber' => $fromNumber),
+        'to' => array(array('phoneNumber' => $toNumber)),
+        'text' => $message,
+    ];
+
+    $sms_ch = curl_init();
+    curl_setopt($sms_ch, CURLOPT_URL, $endpoint);
+    curl_setopt($sms_ch, CURLOPT_POST, true);
+    curl_setopt($sms_ch, CURLOPT_POSTFIELDS, json_encode($sms_data));
+    curl_setopt($sms_ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($sms_ch, CURLOPT_HTTPHEADER, $sms_headers);
+
+    $sms_response = curl_exec($sms_ch);
+    curl_close($sms_ch);
+
 }

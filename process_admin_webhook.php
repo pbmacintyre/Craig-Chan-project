@@ -5,7 +5,7 @@
  *
  */
 
-// runs when a RingCentral event is triggered... send SMS on certain events.
+// runs when a RingCentral admin event is triggered...
 
 require_once('includes/ringcentral-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');

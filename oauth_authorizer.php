@@ -72,8 +72,8 @@ if (isset($_GET['code'])) {
 //    echo_spaces("account data", $account_data);
     $accountId = $account_data['id'];
 
-    $table = "clients";
     // check if this account has already been authorized
+    $table = "clients";
     $columns_data = array("client_id");
     $where_info = array ("account", $accountId, "extension_id", $extensionId, );
     $condition = "AND" ;

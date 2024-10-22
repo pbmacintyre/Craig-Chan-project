@@ -5,7 +5,7 @@
  *
  */
 
-// runs when a RingCentral event is triggered... send SMS on certain events.
+// runs when a RingCentral SMS event is triggered...
 
 require_once('includes/ringcentral-functions.inc');
 require_once('includes/ringcentral-php-functions.inc');
@@ -30,7 +30,7 @@ if (strlen($hvt) > 0) {
 $incoming = file_get_contents("php://input");
 
 // use following to send incoming event data to a file for visual review
-file_put_contents("received_EVENT_payload.log", $incoming);
+file_put_contents("received_SMS_EVENT_payload.log", $incoming);
 
 if (empty($incoming)) {
     http_response_code(200);
@@ -48,8 +48,27 @@ if (!$incoming_data) {
 
 //echo_spaces("incoming payload account #", $incoming_data->body->contacts['0']->account->id);
 
-$accountId = $incoming_data->body->contacts['0']->account->id;
-$timeStamp = $incoming_data->timestamp;
+// parse out the incoming information
+$incoming_sms = $incoming_data->body->subject;
+
+// the shops mobile number
+$toNumber = $incoming_data->body->to[0]->phoneNumber;
+// the customers mobile number
+$fromNumber = $incoming_data->body->from->phoneNumber;
+
+echo_spaces("SMS Subject", $incoming_sms,1);
+echo_spaces("To Number", $toNumber,1);
+echo_spaces("From Number", $fromNumber,1);
+
+if (preg_match('/^(STOP)|(END)|(CANCEL)|(UNSUBSCRIBE)|(QUIT)$/i', $incoming_sms)) {
+    send_stop_sms($fromNumber, $toNumber);
+    // remove numbers from the clients table.
+}
+
+//$accountId = $incoming_data->body->contacts['0']->account->id;
+//$timeStamp = $incoming_data->timestamp;
+
+exit();
 
 // with the account id
 // [1] get records from the DB related to the triggering account in the event payload
