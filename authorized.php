@@ -167,7 +167,6 @@ function check_form ($auth) {
 
         // create admin webhook, there may already be an admin webhook so let the function test that
         ringcentral_create_admin_webhook_subscription($accountId, $_SESSION['access_token']);
-//         echo_spaces( "Admin webhook id", $admin_webhook_id);
 
         // if from & to number exist create sms webhook,
         if ($from_number && $to_number) {

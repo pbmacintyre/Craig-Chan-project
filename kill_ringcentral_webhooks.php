@@ -78,7 +78,7 @@ if (!$db_result) {
             echo_spaces("Webhook URI", $subscription['deliveryMode']['address']);
             echo_spaces("Webhook transport type", $subscription['deliveryMode']['transportType'], 2);
 
-            if ($subscription_id == "bfb44e70-3327-49cf-9650-bc07cb9a7d46") {
+            if ($subscription_id == "9145cf17-bddf-4770-b26d-6f152df49904") {
                 $endpoint_del_url = "https://platform.ringcentral.com/restapi/v1.0/subscription/$subscription_id";
                 $subscription_del_ch = curl_init();
 

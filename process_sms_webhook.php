@@ -56,61 +56,16 @@ $toNumber = $incoming_data->body->to[0]->phoneNumber;
 // the customers mobile number
 $fromNumber = $incoming_data->body->from->phoneNumber;
 
-echo_spaces("SMS Subject", $incoming_sms,1);
-echo_spaces("To Number", $toNumber,1);
-echo_spaces("From Number", $fromNumber,1);
+//echo_spaces("SMS Subject", $incoming_sms,1);
+//echo_spaces("To Number", $toNumber,1);
+//echo_spaces("From Number", $fromNumber,1);
 
-if (preg_match('/^(STOP)|(END)|(CANCEL)|(UNSUBSCRIBE)|(QUIT)$/i', $incoming_sms)) {
+if (preg_match('/^(TODAY)$/i', $incoming_sms)) {
+//TODO change this line to react to STOP when LIVE
+    //if (preg_match('/^(STOP)|(END)|(CANCEL)|(UNSUBSCRIBE)|(QUIT)$/i', $incoming_sms)) {
     send_stop_sms($fromNumber, $toNumber);
     // remove numbers from the clients table.
+    kill_sms_webhook($fromNumber, $toNumber);
 }
 
-//$accountId = $incoming_data->body->contacts['0']->account->id;
-//$timeStamp = $incoming_data->timestamp;
-
-exit();
-
-// with the account id
-// [1] get records from the DB related to the triggering account in the event payload
-// [2] get the audit trail information
-// [3] send events from last 15 minutes to returned DB records
-// [4] post the same events to a TM group as designated by DB record
-
-/* === [1] get records from the DB related to the triggering account in the event payload */
-$table = "clients";
-$columns_data = array("*");
-$where_info = array("account", $accountId);
-$db_result = db_record_select($table, $columns_data, $where_info);
-// all records connected to the triggering account
-
-//echo_spaces("DB result", $db_result);
-$destination_array = array();
-
-foreach ($db_result as $key => $row) {
-    // build destination array
-    $destination_array[$key] = [
-        "access" => $row['access'],
-        "extension" => $row['extension_id'],
-        "from_number" => $row['from_number'],
-        "to_number" => $row['to_number'],
-        "tm_chat_id" => $row['team_chat_id'],
-    ];
-
-    /* === [2] get the audit trail information from 5 minutes either side of the event date stamp  === */
-    $audit_data = get_audit_data($row['access'], $timeStamp);
-}
-
-//echo_spaces("destination array", $destination_array);
-//echo_spaces("audit array", $audit_data);
-
-foreach ($destination_array as $value) {
-    if ($value['from_number'] !== "" && $value['to_number'] !== "") {
-        // [3] send event data to admins via SMS
-        send_admin_sms($destination_array, $audit_data);
-    }
-    if ($value['tm_chat_id'] !== "" ) {
-        // [4] post the event to a TM group
-        send_team_message($destination_array, $audit_data);
-    }
-}
 

@@ -442,7 +442,7 @@ function send_stop_sms ($fromNumber, $toNumber) {
         "Content-Type: application/json"
     ];
 
-    $message = "PBM : You have been removed from the SMS distribution list";
+    $message = "You have been removed from the SMS distribution list";
 
     $sms_data = [
         'from' => array('phoneNumber' => $fromNumber),
@@ -459,5 +459,40 @@ function send_stop_sms ($fromNumber, $toNumber) {
 
     $sms_response = curl_exec($sms_ch);
     curl_close($sms_ch);
+
+}
+
+function kill_sms_webhook ($fromNumber, $toNumber) {
+
+    $table = "clients";
+    $columns_data = array("access","sms_webhook");
+    $where_info = array("from_number", $fromNumber, "to_number", $toNumber,);
+    $condition = "AND";
+    $db_result = db_record_select($table, $columns_data, $where_info, $condition);
+    $accessToken        = $db_result[0]['access'];
+    $subscription_id    = $db_result[0]['sms_webhook'];
+
+    $endpoint = "https://platform.ringcentral.com/restapi/v1.0/subscription/$subscription_id";
+    $subscription_del_ch = curl_init();
+
+    // Set cURL options
+    curl_setopt_array($subscription_del_ch, [
+        CURLOPT_URL => $endpoint,
+        CURLOPT_CUSTOMREQUEST => "DELETE",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            "Authorization: Bearer $accessToken",
+            "Accept: application/json"
+        ],
+    ]);
+
+    $subscription_del_response = curl_exec($subscription_del_ch);
+    curl_close($subscription_del_ch);
+
+    // remove sms_webhook id from DB
+    $fields_data = $fields_data = array(
+        "sms_webhook" => "",
+    );
+    db_record_update($table, $fields_data, $where_info, $condition) ;
 
 }
