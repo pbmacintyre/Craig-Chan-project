@@ -61,22 +61,15 @@ function show_form ($message, $label = "", $print_again = false) { ?>
 /*  --- MAIN --- */
 /* ============= */
 require(__DIR__ . '/includes/vendor/autoload.php');
-
-try {
-    $dotenv = Dotenv\Dotenv::createMutable(__DIR__)->load();
-} catch (Exception $e) {
-    echo 'Error loading .env file: ',  $e->getMessage();
-}
+$dotenv = Dotenv\Dotenv::createMutable(__DIR__ . '/includes')->load();
 
 //echo_spaces("Dot path", $dotenv);
 $client_id = $_ENV['RC_APP_CLIENT_ID'];
-echo_spaces("Client Id", $client_id, 2);
+$redirect_url = $_ENV['RC_REDIRECT_URL'];
 
 if (isset($_POST['authorize'])) {
-
-    $authorization_url = "https://platform.ringcentral.com/restapi/oauth/authorize?response_type=code&client_id={$client_id}";
-
-//     header("Location: $authorization_url");
+    $authorization_url = "https://platform.ringcentral.com/restapi/oauth/authorize?response_type=code&client_id={$client_id}&redirect_uri={$redirect_url}";
+    header("Location: $authorization_url");
 } else {
     $_SESSION['login_action'] = false;
     $message = "Please authorize your account. <br/>";
