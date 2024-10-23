@@ -2,13 +2,17 @@
 
 [![Build Status](https://github.com/ringcentral/ringcentral-php/workflows/CI%20Pipeline/badge.svg?branch=master)](https://github.com/ringcentral/ringcentral-php/actions)
 [![Coverage Status](https://coveralls.io/repos/ringcentral/ringcentral-php/badge.svg?branch=master&service=github)](https://coveralls.io/github/ringcentral/ringcentral-php?branch=master)
+[![Code Document](https://img.shields.io/badge/phpdoc-reference-blue?branch=master&service=github)](https://ringcentral.github.io/ringcentral-php/)
 [![Chat](https://img.shields.io/badge/chat-on%20glip-orange.svg)](https://glipped.herokuapp.com/)
 [![Twitter](https://img.shields.io/twitter/follow/ringcentraldevs.svg?style=social&label=follow)](https://twitter.com/RingCentralDevs)
 
 __[RingCentral Developers](https://developer.ringcentral.com/api-products)__ is a cloud communications platform which can be accessed via more than 70 APIs. The platform's main capabilities include technologies that enable:
 __[Voice](https://developer.ringcentral.com/api-products/voice), [SMS/MMS](https://developer.ringcentral.com/api-products/sms), [Fax](https://developer.ringcentral.com/api-products/fax), [Glip Team Messaging](https://developer.ringcentral.com/api-products/team-messaging), [Data and Configurations](https://developer.ringcentral.com/api-products/configuration)__.
 
-[API Reference](https://developer.ringcentral.com/api-docs/latest/index.html) and [APIs Explorer](https://developer.ringcentral.com/api-explorer/latest/index.html).
+## Additional resources
+
+* [RingCentral API Reference](https://developer.ringcentral.com/api-docs/latest/index.html) - an interactive reference for the RingCentral API that allows developers to make API calls with no code.
+* [Document](https://ringcentral.github.io/ringcentral-php/) - an interactive reference for the SDK code documentation.
 
 # Requirements
 
@@ -65,7 +69,7 @@ Please keep in mind that bundled dependencies may interfere with your other depe
 ## Initialization
 
 ```php
-$rcsdk = new RingCentral\SDK\SDK('clientId', 'clientSecret', RingCentral\SDK\SDK::SERVER_SANDBOX);
+$rcsdk = new RingCentral\SDK\SDK('clientId', 'clientSecret', RingCentral\SDK\SDK::SERVER_PRODUCTION);
 ```
 
 You also may supply custom AppName and AppVersion parameters with your application codename and version. These parameters
@@ -73,7 +77,7 @@ are optional but they will help a lot to identify your application in API logs a
 Allowed characters for AppName and AppVersion are: letters, digits, hyphen, dot and underscore.
 
 ```php
-$rcsdk = new RingCentral\SDK\SDK('clientId', 'clientSecret', RingCentral\SDK\SDK::SERVER_SANDBOX, 'MyApp', '1.0.0');
+$rcsdk = new RingCentral\SDK\SDK('clientId', 'clientSecret', RingCentral\SDK\SDK::SERVER_PRODUCTION, 'MyApp', '1.0.0');
 ```
 
 For production use `RingCentral\SDK\SDK::SERVER_PRODUCTION` constant. Or type in the server URL by hand.
@@ -298,7 +302,7 @@ return array(
     'password'     => 'yourPassword',
     'clientId'     => 'yourClientId',
     'clientSecret' => 'yourClientSecret',
-    'server'       => 'https://platform.devtest.ringcentral.com', // for production - https://platform.ringcentral.com
+    'server'       => 'https://platform.ringcentral.com', // for production - https://platform.ringcentral.com
     'smsNumber'    => '18882223344', // any of SMS-enabled numbers on your RingCentral account
     'mobileNumber' => '16501112233', // your own mobile number to which script will send sms
     'dateFrom'     => 'yyyy-mm-dd',

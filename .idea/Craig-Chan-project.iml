@@ -53,13 +53,9 @@
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/guzzlehttp/guzzle" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/guzzlehttp/promises" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/guzzlehttp/psr7" />
-      <excludeFolder url="file://$MODULE_DIR$/includes/vendor/mailgun/mailgun-php" />
-      <excludeFolder url="file://$MODULE_DIR$/includes/vendor/php-http/client-common" />
-      <excludeFolder url="file://$MODULE_DIR$/includes/vendor/php-http/discovery" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/php-http/guzzle7-adapter" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/php-http/httplug" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/php-http/message" />
-      <excludeFolder url="file://$MODULE_DIR$/includes/vendor/php-http/multipart-stream-builder" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/php-http/promise" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/php-shopify/lib" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/php-shopify/tests" />
@@ -84,12 +80,10 @@
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/symfony/deprecation-contracts" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/symfony/event-dispatcher" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/symfony/event-dispatcher-contracts" />
-      <excludeFolder url="file://$MODULE_DIR$/includes/vendor/symfony/options-resolver" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/symfony/polyfill-ctype" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/symfony/polyfill-mbstring" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/symfony/polyfill-php80" />
       <excludeFolder url="file://$MODULE_DIR$/includes/vendor/vlucas/phpdotenv" />
-      <excludeFolder url="file://$MODULE_DIR$/includes/vendor/webmozart/assert" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

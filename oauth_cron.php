@@ -12,21 +12,20 @@ $dotenv->load();
 
 $client_id = $_ENV['RC_APP_CLIENT_ID'];
 $client_secret = $_ENV['RC_APP_CLIENT_SECRET'];
-$accountId = $_ENV['RC_APP_ACCOUNT_ID'];
 
 $table = "clients";
 $columns_data = array("*");
 $db_result = db_record_select($table, $columns_data);
 
 foreach ($db_result as $row) {
-    $clients = refresh_tokens($row['refresh'], $client_id, $client_secret);
+    $tokens = refresh_tokens($row['refresh'], $client_id, $client_secret);
 
     // save newly created client information
     $table = "clients";
     $where_info = array ("account", $row['account']);
     $fields_data = $fields_data = array(
-        "access" => $clients['accessToken'],
-        "refresh" => $clients['refreshToken'],
+        "access" => $tokens['accessToken'],
+        "refresh" => $tokens['refreshToken'],
     );
 
     db_record_update($table, $fields_data, $where_info);
