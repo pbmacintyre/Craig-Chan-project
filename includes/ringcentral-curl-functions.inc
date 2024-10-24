@@ -288,8 +288,7 @@ function get_new_access_token ($refreshToken) {
     // only used in testing code. New access tokens are generated
     // in the CRON every 30 minutes
 
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-    $dotenv->load();
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__)->load();
 
     $client_id = $_ENV['RC_APP_CLIENT_ID'];
     $client_secret = $_ENV['RC_APP_CLIENT_SECRET'];

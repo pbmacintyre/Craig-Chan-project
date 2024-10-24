@@ -8,8 +8,7 @@
 /* ======================== */
 function db_credentials () {
     require(__DIR__ . '/vendor/autoload.php');
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-    $dotenv->load();
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__)->load();
 
     $servername = $_ENV['DB_SERVER_NAME'];
     $username = $_ENV['DB_USER_NAME'];
@@ -155,29 +154,3 @@ function db_record_update ($table, $fields_data, $where_info = "", $condition = 
     $stmt->execute();
 }
 
-function db_record_delete ($table, $where_col, $where_data) {
-    /*
-    Usage:
-    $table = "shopify_shops";
-    $where_col = "column name";
-    $where_data = "column value"
-    */
-    $conn = db_credentials();
-    $sql = "DELETE FROM $table WHERE $where_col = :where_data ";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':where_data', $where_data);
-    $stmt->execute();
-}
-
-function db_empty_table ($table) {
-    /*
-    Usage:
-    $table = "shopify_shops";
-    db_empty_table ($table);
-    */
-    $conn = db_credentials();
-    $sql = "DELETE FROM $table WHERE $where_col = :where_data ";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':where_data', $where_data);
-    $stmt->execute();
-}

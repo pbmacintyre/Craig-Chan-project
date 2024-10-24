@@ -14,8 +14,7 @@ require_once('includes/ringcentral-db-functions.inc');
 
 require('includes/vendor/autoload.php');
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/includes");
-$dotenv->load();
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/includes")->load();
 
 show_errors();
 

@@ -10,8 +10,7 @@ require_once('includes/ringcentral-curl-functions.inc');
 show_errors();
 
 require('includes/vendor/autoload.php');
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/includes");
-$dotenv->load();
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/includes")->load();
 
 $client_id = $_ENV['RC_APP_CLIENT_ID'];
 $client_secret = $_ENV['RC_APP_CLIENT_SECRET'];

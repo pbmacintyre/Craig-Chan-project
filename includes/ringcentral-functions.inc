@@ -28,8 +28,7 @@ function app_version () {
 function ringcentral_build_recaptcha_v3_top () {
 
     require(__DIR__ . '/vendor/autoload.php');
-    $dotenv = Dotenv\Dotenv::createImmutable('includes');
-    $dotenv->load();
+    $dotenv = Dotenv\Dotenv::createImmutable('includes')->load();
 
     $site_key = $_ENV['GRC_SITE_KEY'];
 
@@ -41,8 +40,7 @@ function ringcentral_build_recaptcha_v3_top () {
 /* ========================= */
 function ringcentral_verify_v3_recaptcha ($action) {
     require(__DIR__ . '/vendor/autoload.php');
-    $dotenv = Dotenv\Dotenv::createImmutable('includes');
-    $dotenv->load();
+    $dotenv = Dotenv\Dotenv::createImmutable('includes')->load();
 
     $secret_key = $_ENV['GRC_SECRET_KEY'];
 
@@ -139,8 +137,7 @@ function ringcentral_create_admin_webhook_subscription ($accountId, $accessToken
     if ($admin_webhook_exists == false) {
         // no webhook, so create a new admin webhook and pass id back
         require('includes/vendor/autoload.php');
-        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-        $dotenv->load();
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__)->load();
 
         $webhook_url = $_ENV['RC_ADMIN_WEBHOOK_LISTENING_ADDRESS'];
 
@@ -183,8 +180,7 @@ function ringcentral_create_admin_webhook_subscription ($accountId, $accessToken
 function ringcentral_create_sms_webhook_subscription ($accountId, $extensionId, $accessToken) {
     // create watching subscription webhook for audit events
     require('includes/vendor/autoload.php');
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-    $dotenv->load();
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__)->load();
 
     $webhook_url = $_ENV['RC_SMS_WEBHOOK_LISTENING_ADDRESS'];
 
